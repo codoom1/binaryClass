@@ -738,6 +738,22 @@ attr(results, "formula") <- deparse(formula)
 return(results)
 }
 
+#' Extract the best model from the results of OptimalModelSearch
+#'
+#' This function extracts the best model from the results of OptimalModelSearch
+#' and returns the actual fitted model object.
+#'
+#' @param results A list containing the results of OptimalModelSearch.
+#' @param data A data frame containing the original data used for model fitting.
+#' @return The best model object from the results.
+#' @export
+extract_best_model <- function(results, data) {
+  if (is.null(results$best_model_object)) {
+    stop("No best model object found in results.")
+  }
+  return(results$best_model_object)
+}
+
 
 
 

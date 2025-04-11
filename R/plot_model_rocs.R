@@ -139,9 +139,6 @@ plot_model_rocs <- function(results, comparison = FALSE, multi_panel = FALSE,
                legacy.axes = TRUE,
                asp = 1)
           
-          # Add diagonal reference line
-          graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
-          
           # Add grid for readability
           graphics::grid(lty = "dotted", col = "lightgray")
           
@@ -186,9 +183,6 @@ plot_model_rocs <- function(results, comparison = FALSE, multi_panel = FALSE,
                  legacy.axes = TRUE)
           }
         }
-        
-        # Add diagonal reference line
-        graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
         
         # Add grid for readability
         graphics::grid(lty = "dotted", col = "lightgray")
@@ -237,9 +231,6 @@ plot_model_rocs <- function(results, comparison = FALSE, multi_panel = FALSE,
                   cex = 1.1,
                   font = 2,
                   col = "#377EB8")
-    
-    # Add diagonal reference line
-    graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
     
     # Return the best ROC invisibly
     return(invisible(best_roc))

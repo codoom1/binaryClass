@@ -1,0 +1,442 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\makeatletter\@ifl@t@r\fmtversion{2018/04/01}{}{\usepackage[utf8]{inputenc}}\makeatother
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `binaryClass'}}
+\par\bigskip{\large \today}
+\end{center}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {binaryClass: Binary Classification Package}}}{}
+\begin{description}
+\raggedright{}
+\item[Type]\AsIs{Package}
+\item[Title]\AsIs{Binary Classification Package}
+\item[Version]\AsIs{1.0.0}
+\item[Author]\AsIs{Christopher Odoom, Denis Folitse, Owen Gallagher &Paul Shannon}
+\item[Maintainer]\AsIs{Christopher Odoom & Denis Folitse }\email{codoom@umass.edu}\AsIs{}\email{dfolitse@umass.edu}\AsIs{}
+\item[Description]\AsIs{
+The binaryClass package provides functions and tools for binary classification tasks. 
+It includes functions for model training, evaluation, and prediction. 
+Use the package to streamline the development and analysis of binary classification models.
+Example datasets and utility functions are also included.This package also provide a function
+for descriptive analysis. It does so by making plots based on user specifications.}
+\item[License]\AsIs{MIT}
+\item[Encoding]\AsIs{UTF-8}
+\item[Imports]\AsIs{glmnet, pROC, caret, stats, graphics, utils}
+\item[Suggests]\AsIs{testthat, knitr, rmarkdown, mlbench}
+\item[NeedsCompilation]\AsIs{no}
+\item[RoxygenNote]\AsIs{7.3.2}
+\end{description}
+\Rdcontents{Contents}
+\HeaderA{.draw\_confusion\_matrix}{Find the Optimal Binary Classification Model}{.draw.Rul.confusion.Rul.matrix}
+\keyword{internal}{.draw\_confusion\_matrix}
+%
+\begin{Description}
+This function trains and compares several binary classification models
+(logistic regression with stepwise selection, Lasso, Ridge) based on a
+specified performance criterion (AUC, Accuracy, or AIC) using a training/test split.
+It handles NA values by removing rows with missing data in any variable specified
+in the formula.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.draw_confusion_matrix(cm)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{cm}] A confusion matrix object (typically from `caret::confusionMatrix`).
+
+\item[\code{formula}] An object of class \bsl{}"formula\bsl{}": a symbolic description of the
+model to be fitted (e.g., `response \textasciitilde{} predictor1 + predictor2` or `response \textasciitilde{} .`).
+
+\item[\code{data}] A data frame containing the variables in the model. Rows with NA
+values in any variable specified in the `formula` will be removed before analysis.
+
+\item[\code{criterion}] A character string specifying the criterion for model selection.
+Must be one of "AUC", "Accuracy", or "AIC".
+
+\item[\code{training\_percent}] A numeric value between 0 and 1 indicating the proportion
+of the data to use for training. Default is `0.8`.
+
+\item[\code{threshold}] A numeric value between 0 and 1 used as the probability
+threshold for classification when `criterion = "Accuracy"`. Default is `0.5`.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A list containing the results:
+\begin{itemize}
+
+\item{} `criterion`: The criterion used for selection.
+\item{} `best\_model\_name`: The name of the best model selected
+(e.g., "stepwise.regression", "lasso.regression", "ridge.regression", "lasso.refit.glm").
+\item{} `performance\_metric`: The value of the specified criterion for the best model.
+\item{} `best\_model\_object`: The fitted model object for the best model
+(a `glm` object for stepwise, a `cv.glmnet` object for lasso/ridge).
+\item{} `coefficients`: Coefficients of the best model (matrix or sparse matrix).
+\item{} `details`: Additional details, depending on the criterion:
+\begin{itemize}
+
+\item{} AUC: The `roc` object from `pROC` for the best model.
+\item{} Accuracy: The `confusionMatrix` object from `caret` for the best model.
+\item{} AIC: A list containing the AIC value (`AIC\_value` or `AIC\_refit\_value`)
+and potentially the names of variables selected by Lasso (`selected\_vars`).
+
+\end{itemize}
+
+
+\end{itemize}
+
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# Load required packages for example
+library(mlbench)
+data(PimaIndiansDiabetes)
+
+# Ensure diabetes is a factor
+PimaIndiansDiabetes$diabetes <- as.factor(PimaIndiansDiabetes$diabetes)
+
+# Find best model based on AUC using all predictors
+set.seed(42) # for reproducibility of train/test split
+result_auc <- OptimalModelSearch(diabetes ~ ., data = PimaIndiansDiabetes, criterion = "AUC")
+print(result_auc$best_model_name)
+print(result_auc$performance_metric)
+plot(result_auc$details) # Plot ROC curve
+graphics::text(0.7, 0.2, paste("AUC =", round(pROC::auc(result_auc$details), 3)), cex = 0.9)
+
+# Find best model based on Accuracy with a 0.6 threshold
+set.seed(42)
+result_acc <- OptimalModelSearch(diabetes ~ glucose + mass + age, data = PimaIndiansDiabetes,
+                                 criterion = "Accuracy", threshold = 0.6)
+print(result_acc$best_model_name)
+print(result_acc$performance_metric)
+print(result_acc$details) # Print confusion matrix details
+
+# Find best model based on AIC
+set.seed(42)
+result_aic <- OptimalModelSearch(diabetes ~ pregnant + glucose + pressure + mass + pedigree + age,
+                                 data = PimaIndiansDiabetes, criterion = "AIC")
+print(result_aic$best_model_name)
+print(result_aic$performance_metric)
+print(result_aic$coefficients)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{.plot\_barplot\_ind}{Generate Descriptive Plots for Variables in a Data Frame}{.plot.Rul.barplot.Rul.ind}
+\keyword{internal}{.plot\_barplot\_ind}
+%
+\begin{Description}
+This function creates various plots to visualize individual variables or pairwise
+relationships between a response variable (assumed to be the first column)
+and other explanatory variables in a data frame.
+
+This function creates various plots to visualize individual variables or pairwise
+relationships between a response variable (assumed to be the first column)
+and other explanatory variables in a data frame.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.plot_barplot_ind(x, var_name, col_idx, max_levels = 13)
+
+.plot_barplot_ind(x, var_name, col_idx, max_levels = 13)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] The vector of data for the variable.
+
+\item[\code{var\_name}] The name of the variable (for plot title/labels).
+
+\item[\code{col\_idx}] The column index (used for default color selection).
+
+\item[\code{max\_levels}] The maximum number of unique levels before percentages are omitted (default 13).
+
+\item[\code{data}] A data frame containing the variables to be plotted. The response
+variable should be in the first column if `type = "pair"`.
+
+\item[\code{type}] A character string specifying the type of plot. Must be one of
+"ind" or "pair".
+
+\item[\code{ppv}] An integer (1 or 2) specifying the number of plots per variable
+when `type = "ind"`. This argument is ignored if `type = "pair"`.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Invisible NULL. Plots are generated on the current graphics device.
+
+Invisible NULL. Plots are generated on the current graphics device.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# --- Examples for plot_descrip ---
+
+# Basic usage with iris dataset
+data(iris)
+
+# Individual plots (one per variable)
+plot_descrip(iris, type = "ind", ppv = 1)
+
+# Individual plots (two per numeric variable, one for categorical)
+plot_descrip(iris, type = "ind", ppv = 2)
+
+# Pairwise plots (assuming Sepal.Length is the response)
+plot_descrip(iris, type = "pair")
+
+# --- Pairwise plots with a factor response ---
+data(mtcars)
+# Make copies to modify
+mtcars_mod <- mtcars
+# Treat 'cyl' as a factor response
+mtcars_mod$cyl <- as.factor(mtcars_mod$cyl)
+# Plot relationships between 'cyl' and other variables
+plot_descrip(mtcars_mod[, c("cyl", "mpg", "wt", "gear")], type = "pair")
+
+# --- Handling character variables ---
+# Create some character data
+char_data <- data.frame(
+  response = rnorm(50),
+  category = sample(c("A", "B", "C"), 50, replace = TRUE),
+  group = sample(c("X", "Y"), 50, replace = TRUE)
+)
+# Individual plots (should create barplots for character columns)
+plot_descrip(char_data, type = "ind", ppv = 1)
+
+# Pairwise plots with character predictor
+plot_descrip(char_data, type = "pair")
+
+# --- Edge case: Single column ---
+plot_descrip(iris[, "Sepal.Length", drop = FALSE], type = "ind", ppv = 1)
+
+# --- Handling too many categories in 'pair' type ---
+# Create data with a categorical variable having many levels
+iris_many_levels <- iris
+# Convert Sepal.Width to character and create many unique values artificially
+iris_many_levels$ManyCats <- as.character(round(iris_many_levels$Sepal.Width * 100))
+# Check number of levels (should be > 15)
+print(paste("Number of unique values for ManyCats:", length(unique(iris_many_levels$ManyCats))))
+# Plot pairwise with Sepal.Length as response
+# Should print a message for 'ManyCats' and skip its plot
+plot_descrip(iris_many_levels[, c("Sepal.Length", "Petal.Length", "ManyCats")], type = "pair")
+
+## End(Not run)
+## Not run: 
+# --- Examples for plot_descrip ---
+
+# Basic usage with iris dataset
+data(iris)
+
+# Individual plots (one per variable)
+plot_descrip(iris, type = "ind", ppv = 1)
+
+# Individual plots (two per numeric variable, one for categorical)
+plot_descrip(iris, type = "ind", ppv = 2)
+
+# Pairwise plots (assuming Sepal.Length is the response)
+plot_descrip(iris, type = "pair")
+
+# --- Pairwise plots with a factor response ---
+data(mtcars)
+# Make copies to modify
+mtcars_mod <- mtcars
+# Treat 'cyl' as a factor response
+mtcars_mod$cyl <- as.factor(mtcars_mod$cyl)
+# Plot relationships between 'cyl' and other variables
+plot_descrip(mtcars_mod[, c("cyl", "mpg", "wt", "gear")], type = "pair")
+
+# --- Handling character variables ---
+# Create some character data
+char_data <- data.frame(
+  response = rnorm(50),
+  category = sample(c("A", "B", "C"), 50, replace = TRUE),
+  group = sample(c("X", "Y"), 50, replace = TRUE)
+)
+# Individual plots (should create barplots for character columns)
+plot_descrip(char_data, type = "ind", ppv = 1)
+
+# Pairwise plots with character predictor
+plot_descrip(char_data, type = "pair")
+
+# --- Edge case: Single column ---
+plot_descrip(iris[, "Sepal.Length", drop = FALSE], type = "ind", ppv = 1)
+
+# --- Handling too many categories in 'pair' type ---
+# Create data with a categorical variable having many levels
+iris_many_levels <- iris
+# Convert Sepal.Width to character and create many unique values artificially
+iris_many_levels$ManyCats <- as.character(round(iris_many_levels$Sepal.Width * 100))
+# Check number of levels (should be > 15)
+print(paste("Number of unique values for ManyCats:", length(unique(iris_many_levels$ManyCats))))
+# Plot pairwise with Sepal.Length as response
+# Should print a message for 'ManyCats' and skip its plot
+plot_descrip(iris_many_levels[, c("Sepal.Length", "Petal.Length", "ManyCats")], type = "pair")
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{OptimalModelSearch}{A Binary Classification Model Selection}{OptimalModelSearch}
+%
+\begin{Description}
+This function  does binary classification model selection. It compares model based on user specified criterions including AUC, Accuracy and AIC.This function provides a simplified method for fitting some selected binary classification model simultaneously. It then returns the best model based on a predetermined set of control parameters. These parameters include evaluation criteria, formula, data, training percentage and threshold for accuracy calculations.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+OptimalModelSearch(formula, data, criterion=c("AUC","Accuracy","AIC"),
+training_percent, threshold)
+
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] A formula object which defines the model structure same as the formula object
+for lm, glm, gams and other model building functions.
+
+\item[\code{data}] A data.frame or matrix object where the variables in the formula object can be found. The response variable must code as 1 or 0 for the two classes.
+
+\item[\code{criterion}]  A criteria specifying which metric the model selection should be based on. This function supports AIC, Accuracy, and AUC
+
+\item[\code{threshold}]  A number between 0 and 1 which specifies what threshold to classify
+observations as positive or negative.It applicable when method is Accuracy
+threshold tells the function how to distinguish between the two classes
+the default is 0.5 
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+The “formula” input specifies how the predictors are included in the model. It functions similarly to the formula objects used in glm, lm, and other modeling functions. This design choice is intended to allow users to easily fit all specified models.
+
+
+The “Data” input refers to the dataset used for modeling, which can be either a matrix or a dataframe. It’s crucial to ensure that all variables specified in the formula are present in the data.
+
+The “Criterion” input allows users to search for a model based on their preferred performance measure. Currently, our function supports three criteria including AUC (which is the most popular in this class), Accuracy, and AIC.
+
+In addition, the “training\_percent” input allows users to assess models based on the proportion of training data. This flexibility enhances the model specification process and introduces more dynamics into model building, especially in the case of binary classification. And lastly, the threshold option is applicable when the criterion is Accuracy, it tells the function how to distinguish between the two classes in the case where a confusion matrix had to be generated  to calculate the accuracy and other measures such as sensitivity and specificity. The default is 0.5 and users can use this flexibility to train their model based on their knowledge of the problem.
+
+
+\end{Details}
+%
+\begin{Value}
+\begin{ldescription}
+\item[\code{Status}] A statement telling the user which model was selected
+\item[\code{Best Model Output}] The model summary of the best Model
+\item[\code{ROC plot}] An ROC curve is returned with the AUC printed on it.
+\item[\code{Confusion Matrix}] A visual of a confusion matrix together with performance measure
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}
+Christopher Odoom ,Denis Folitse, Owen Gallagher \& Paul Shannon <codoom@umass.edu>
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+##==Example 1====##
+## Using the Accuracy criterion
+## Loading the PIMA Diabetes data
+require(mlbench)
+data.t <- PimaIndiansDiabetes2
+data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
+OptimalModelSearch(formula=diabetes~., data=data.t,
+criterion="Accuracy", training_percent=0.8, threshold=0.54)
+
+
+##==Example 2====##
+## Using the AUC criterion
+library(mlbench)
+dat<- Sonar
+dat$Class <- ifelse(dat$Class=="R",0,1)
+OptimalModelSearch(formula=Class~., data=dat,
+criterion="AUC", training_percent=0.8)
+
+
+##==Example 3====##
+## Using AIC criterion
+## Loading the PIMA Diabetes data
+require(mlbench)
+data.t <- PimaIndiansDiabetes2
+data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
+OptimalModelSearch(formula=diabetes~., data=data.t,
+criterion="AIC", training_percent=0.8)
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{plot.descrip}{Descriptive Plots}{plot.descrip}
+%
+\begin{Description}
+This package makes plots based on user specifications. It makes individual and pairwise plots.The "plot.descrip" function in R is designed for exploratory data analysis. When type="ind," it generates individual plots for each variable, displaying either barplots for categorical variables or boxplots for numeric variables. The "ppv" parameter controls the number of plots per variable. When type="pair," it produces scatterplots or boxplots for the pairwise relationships between the response variable and each explanatory variable. The function handles various data types, such as numeric, integer, factor, and character, and includes considerations for the number of unique categories in categorical variables to avoid overly cluttered plots. The color schemes are randomized to enhance visualization.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plot.descrip(data, type=c("ind", "pair"), ppv=c(1,2))
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data:}] The dataframe containing columns of data to be visualized
+: The user has to relocate their response variable to the first column of their dataset and meticulously define the class of the data.
+
+\item[\code{type:}] ind= Whether one wants to visualize plots of just a variable.\bsl{}
+pair= If one decides to visualize the pair relationship between the response variable and each explanatory variable
+
+\item[\code{ppv:}]  also known as plots per variable. if specified 1, the function will output on plot per each variables in dataframe.
+if specified 2, it will output two plots per each variable. For now, mostly associated with type="ind"
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Author}
+Denis Folitse, Christopher Odoom , Owen Gallagher \& Paul Shannon <codoom@umass.edu>
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+## Example 1
+head(iris)
+data1=iris
+## Generate one plot for each column of data1
+
+plot.descrip(data1,type="ind", ppv=1 )
+
+
+
+## Example 2
+#Generate one plot for each factor/character variables
+head(airquality)
+data3=airquality
+
+plot.descrip(data3,type="ind", ppv=2 )
+
+## Example 3
+## plot the pairwise relationship between mpg
+
+head(mtcars)
+data4=mtcars
+plot.descrip(data4,type="pair")
+
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}

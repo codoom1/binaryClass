@@ -1,0 +1,130 @@
+* using log directory ‘/Users/christopherodoom/Desktop/My_R_Packages/binaryClass/..Rcheck’
+* using R version 4.4.3 (2025-02-28)
+* using platform: aarch64-apple-darwin24.2.0
+* R was compiled by
+    Apple clang version 16.0.0 (clang-1600.0.26.6)
+    GNU Fortran (Homebrew GCC 14.2.0_1) 14.2.0
+* running under: macOS Sequoia 15.4
+* using session charset: UTF-8
+* checking for file ‘./DESCRIPTION’ ... OK
+* checking extension type ... Package
+* this is package ‘binaryClass’ version ‘1.0.0’
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  .DS_Store
+  ..Rcheck
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘binaryClass’ can be installed ... WARNING
+Found the following significant warnings:
+  Warning: /Users/christopherodoom/Desktop/My_R_Packages/binaryClass/man/OptimalModelSearch.Rd:32: unexpected '}'
+See ‘/Users/christopherodoom/Desktop/My_R_Packages/binaryClass/..Rcheck/00install.out’ for details.
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... NOTE
+License components which are templates and need '+ file LICENSE':
+  MIT
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Found the following directory with the name of a check directory:
+  ./..Rcheck
+Most likely, these were included erroneously.
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... WARNING
+prepare_Rd: ./man/OptimalModelSearch.Rd:32: unexpected '}'
+prepare_Rd: OptimalModelSearch.Rd:62-64: Dropping empty section \note
+prepare_Rd: OptimalModelSearch.Rd:55-57: Dropping empty section \references
+prepare_Rd: OptimalModelSearch.Rd:68-71: Dropping empty section \seealso
+prepare_Rd: plot.descrip.Rd:27-29: Dropping empty section \details
+prepare_Rd: plot.descrip.Rd:30-36: Dropping empty section \value
+prepare_Rd: plot.descrip.Rd:44-46: Dropping empty section \note
+prepare_Rd: plot.descrip.Rd:37-39: Dropping empty section \references
+prepare_Rd: plot.descrip.Rd:50-52: Dropping empty section \seealso
+* checking Rd metadata ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... WARNING
+Functions or methods with usage in Rd file 'plot.descrip.Rd' but not in code:
+  ‘plot.descrip’
+
+Codoc mismatches from Rd file 'OptimalModelSearch.Rd':
+OptimalModelSearch
+  Code: function(formula, data, criterion, training_percent = 0.8,
+                 threshold = 0.5)
+  Docs: function(formula, data, criterion = c("AUC", "Accuracy",
+                 "AIC"), training_percent, threshold)
+  Mismatches in argument default values:
+    Name: 'criterion' Code:  Docs: c("AUC", "Accuracy", "AIC")
+    Name: 'training_percent' Code: 0.8 Docs: 
+    Name: 'threshold' Code: 0.5 Docs: 
+
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in Rd file 'OptimalModelSearch.Rd'
+  ‘training_percent’
+
+Documented arguments not in \usage in Rd file 'dot-draw_confusion_matrix.Rd':
+  ‘formula’ ‘data’ ‘criterion’ ‘training_percent’ ‘threshold’
+
+Documented arguments not in \usage in Rd file 'dot-plot_barplot_ind.Rd':
+  ‘data’ ‘type’ ‘ppv’
+
+Undocumented arguments in Rd file 'plot.descrip.Rd'
+  ‘data’ ‘type’ ‘ppv’
+Documented arguments not in \usage in Rd file 'plot.descrip.Rd':
+  ‘data:’ ‘type:’ ‘ppv:’
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking examples ... ERROR
+Running examples in ‘binaryClass-Ex.R’ failed
+The error most likely occurred in:
+
+> ### Name: OptimalModelSearch
+> ### Title: A Binary Classification Model Selection
+> ### Aliases: OptimalModelSearch
+> 
+> ### ** Examples
+> 
+> 
+> ##==Example 1====##
+> ## Using the Accuracy criterion
+> ## Loading the PIMA Diabetes data
+> require(mlbench)
+Loading required package: mlbench
+> data.t <- PimaIndiansDiabetes2
+Error: object 'PimaIndiansDiabetes2' not found
+Execution halted
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+* checking PDF version of manual without index ... ERROR
+Re-running with no redirection of stdout/stderr.
+* DONE
+Status: 2 ERRORs, 6 WARNINGs, 2 NOTEs

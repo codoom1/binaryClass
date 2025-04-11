@@ -1,0 +1,47 @@
+
+R version 4.4.3 (2025-02-28) -- "Trophy Case"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin24.2.0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "binaryClass"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('binaryClass')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("OptimalModelSearch")
+> ### * OptimalModelSearch
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: OptimalModelSearch
+> ### Title: A Binary Classification Model Selection
+> ### Aliases: OptimalModelSearch
+> 
+> ### ** Examples
+> 
+> 
+> ##==Example 1====##
+> ## Using the Accuracy criterion
+> ## Loading the PIMA Diabetes data
+> require(mlbench)
+Loading required package: mlbench
+> data.t <- PimaIndiansDiabetes2
+Error: object 'PimaIndiansDiabetes2' not found
+Execution halted

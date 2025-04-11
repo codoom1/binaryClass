@@ -1,0 +1,20 @@
+Package: binaryClass
+Type: Package
+Title: Binary Classification Package
+Version: 1.0.0
+Author: Christopher Odoom, Denis Folitse, Owen Gallagher &Paul Shannon
+Maintainer: Christopher Odoom & Denis Folitse <codoom@umass.edu><dfolitse@umass.edu>
+Description: 
+    The binaryClass package provides functions and tools for binary classification tasks. 
+    It includes functions for model training, evaluation, and prediction. 
+    Use the package to streamline the development and analysis of binary classification models.
+    Example datasets and utility functions are also included.This package also provide a function
+    for descriptive analysis. It does so by making plots based on user specifications.
+License: MIT
+Encoding: UTF-8
+Imports: glmnet, pROC, caret, stats, graphics, utils
+Suggests: testthat, knitr, rmarkdown, mlbench
+NeedsCompilation: no
+Packaged: 2023-11-28 04:06:53 UTC; christopherodoom
+RoxygenNote: 7.3.2
+Built: R 4.4.3; ; 2025-04-11 17:15:21 UTC; unix

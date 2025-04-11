@@ -1,0 +1,261 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\makeatletter\@ifl@t@r\fmtversion{2018/04/01}{}{\usepackage[utf8]{inputenc}}\makeatother
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `binaryClass'}}
+\par\bigskip{\large \today}
+\end{center}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {binaryClass: Binary Classification Package}}}{}
+\begin{description}
+\raggedright{}
+\item[Type]\AsIs{Package}
+\item[Title]\AsIs{Binary Classification Package}
+\item[Version]\AsIs{1.0.0}
+\item[Author]\AsIs{Christopher Odoom, Denis Folitse, Owen Gallagher &Paul Shannon}
+\item[Maintainer]\AsIs{Christopher Odoom & Denis Folitse }\email{codoom@umass.edu}\AsIs{}\email{dfolitse@umass.edu}\AsIs{}
+\item[Description]\AsIs{
+The binaryClass package provides functions and tools for binary classification tasks. 
+It includes functions for model training, evaluation, and prediction. 
+Use the package to streamline the development and analysis of binary classification models.
+Example datasets and utility functions are also included.This package also provide a function
+for descriptive analysis. It does so by making plots based on user specifications.}
+\item[License]\AsIs{MIT}
+\item[Encoding]\AsIs{UTF-8}
+\item[Imports]\AsIs{glmnet, pROC, caret, stats, graphics, utils}
+\item[Suggests]\AsIs{testthat, knitr, rmarkdown, mlbench}
+\item[NeedsCompilation]\AsIs{no}
+\item[RoxygenNote]\AsIs{7.3.2}
+\end{description}
+\Rdcontents{Contents}
+\HeaderA{.draw\_confusion\_matrix}{Internal helper function to draw a confusion matrix visualization}{.draw.Rul.confusion.Rul.matrix}
+\keyword{internal}{.draw\_confusion\_matrix}
+%
+\begin{Description}
+Internal helper function to draw a confusion matrix visualization
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.draw_confusion_matrix(cm)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{cm}] A confusion matrix object (typically from `caret::confusionMatrix`).
+\end{ldescription}
+\end{Arguments}
+\HeaderA{.plot\_barplot\_ind}{Internal helper function for plotting barplots}{.plot.Rul.barplot.Rul.ind}
+\keyword{internal}{.plot\_barplot\_ind}
+%
+\begin{Description}
+Internal helper function for plotting barplots
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+.plot_barplot_ind(x, var_name, col_idx, max_levels = 13)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{x}] The vector of data for the variable.
+
+\item[\code{var\_name}] The name of the variable (for plot title/labels).
+
+\item[\code{col\_idx}] The column index (used for default color selection).
+
+\item[\code{max\_levels}] The maximum number of unique levels before percentages are omitted (default 13).
+\end{ldescription}
+\end{Arguments}
+\HeaderA{OptimalModelSearch}{A Binary Classification Model Selection}{OptimalModelSearch}
+%
+\begin{Description}
+This function  does binary classification model selection. It compares model based on user specified criterions including AUC, Accuracy and AIC.This function provides a simplified method for fitting some selected binary classification model simultaneously. It then returns the best model based on a predetermined set of control parameters. These parameters include evaluation criteria, formula, data, training percentage and threshold for accuracy calculations.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+OptimalModelSearch(formula, data, criterion = c("AUC", "Accuracy", "AIC"),
+                   training_percent = 0.8, threshold = 0.5)
+
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] A formula object which defines the model structure same as the formula object
+for lm, glm, gams and other model building functions.
+
+\item[\code{data}] A data.frame or matrix object where the variables in the formula object can be found. The response variable must code as 1 or 0 for the two classes.
+
+\item[\code{criterion}]  A criteria specifying which metric the model selection should be based on. This function supports AIC, Accuracy, and AUC
+
+\item[\code{training\_percent}] A numeric value between 0 and 1 indicating the proportion of data to use for training. Default is 0.8.
+
+\item[\code{threshold}]  A number between 0 and 1 which specifies what threshold to classify
+observations as positive or negative. It applicable when method is Accuracy.
+Threshold tells the function how to distinguish between the two classes.
+The default is 0.5 
+
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+The "formula" input specifies how the predictors are included in the model. It functions similarly to the formula objects used in glm, lm, and other modeling functions. This design choice is intended to allow users to easily fit all specified models.
+
+
+The "Data" input refers to the dataset used for modeling, which can be either a matrix or a dataframe. It's crucial to ensure that all variables specified in the formula are present in the data.
+
+The "Criterion" input allows users to search for a model based on their preferred performance measure. Currently, our function supports three criteria including AUC (which is the most popular in this class), Accuracy, and AIC.
+
+In addition, the "training\_percent" input allows users to assess models based on the proportion of training data. This flexibility enhances the model specification process and introduces more dynamics into model building, especially in the case of binary classification. And lastly, the threshold option is applicable when the criterion is Accuracy, it tells the function how to distinguish between the two classes in the case where a confusion matrix had to be generated  to calculate the accuracy and other measures such as sensitivity and specificity. The default is 0.5 and users can use this flexibility to train their model based on their knowledge of the problem.
+
+
+\end{Details}
+%
+\begin{Value}
+\begin{ldescription}
+\item[\code{Status}] A statement telling the user which model was selected
+\item[\code{Best Model Output}] The model summary of the best Model
+\item[\code{ROC plot}] An ROC curve is returned with the AUC printed on it.
+\item[\code{Confusion Matrix}] A visual of a confusion matrix together with performance measure
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}
+Christopher Odoom ,Denis Folitse, Owen Gallagher \& Paul Shannon <codoom@umass.edu>
+\end{Author}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+##==Example 1====##
+## Using the Accuracy criterion
+## Loading the PIMA Diabetes data
+require(mlbench)
+data(PimaIndiansDiabetes)
+data.t <- PimaIndiansDiabetes
+data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
+OptimalModelSearch(formula=diabetes~., data=data.t,
+criterion="Accuracy", training_percent=0.8, threshold=0.54)
+
+
+##==Example 2====##
+## Using the AUC criterion
+library(mlbench)
+data(Sonar)
+dat<- Sonar
+dat$Class <- ifelse(dat$Class=="R",0,1)
+OptimalModelSearch(formula=Class~., data=dat,
+criterion="AUC", training_percent=0.8)
+
+
+##==Example 3====##
+## Using AIC criterion
+## Loading the PIMA Diabetes data
+require(mlbench)
+data(PimaIndiansDiabetes)
+data.t <- PimaIndiansDiabetes
+data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
+OptimalModelSearch(formula=diabetes~., data=data.t,
+criterion="AIC", training_percent=0.8)
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{plot\_descrip}{Generate Descriptive Plots for Variables in a Data Frame}{plot.Rul.descrip}
+%
+\begin{Description}
+This function creates various plots to visualize individual variables or pairwise
+relationships between a response variable (assumed to be the first column)
+and other explanatory variables in a data frame.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plot_descrip(data, type, ppv)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{data}] A data frame containing the variables to be plotted. The response
+variable should be in the first column if `type = "pair"`.
+
+\item[\code{type}] A character string specifying the type of plot. Must be one of
+"ind" or "pair".
+
+\item[\code{ppv}] An integer (1 or 2) specifying the number of plots per variable
+when `type = "ind"`. This argument is ignored if `type = "pair"`.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+Invisible NULL. Plots are generated on the current graphics device.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# --- Examples for plot_descrip ---
+
+# Basic usage with iris dataset
+data(iris)
+
+# Individual plots (one per variable)
+plot_descrip(iris, type = "ind", ppv = 1)
+
+# Individual plots (two per numeric variable, one for categorical)
+plot_descrip(iris, type = "ind", ppv = 2)
+
+# Pairwise plots (assuming Sepal.Length is the response)
+plot_descrip(iris, type = "pair")
+
+# --- Pairwise plots with a factor response ---
+data(mtcars)
+# Make copies to modify
+mtcars_mod <- mtcars
+# Treat 'cyl' as a factor response
+mtcars_mod$cyl <- as.factor(mtcars_mod$cyl)
+# Plot relationships between 'cyl' and other variables
+plot_descrip(mtcars_mod[, c("cyl", "mpg", "wt", "gear")], type = "pair")
+
+# --- Handling character variables ---
+# Create some character data
+char_data <- data.frame(
+  response = rnorm(50),
+  category = sample(c("A", "B", "C"), 50, replace = TRUE),
+  group = sample(c("X", "Y"), 50, replace = TRUE)
+)
+# Individual plots (should create barplots for character columns)
+plot_descrip(char_data, type = "ind", ppv = 1)
+
+# Pairwise plots with character predictor
+plot_descrip(char_data, type = "pair")
+
+# --- Edge case: Single column ---
+plot_descrip(iris[, "Sepal.Length", drop = FALSE], type = "ind", ppv = 1)
+
+# --- Handling too many categories in 'pair' type ---
+# Create data with a categorical variable having many levels
+iris_many_levels <- iris
+# Convert Sepal.Width to character and create many unique values artificially
+iris_many_levels$ManyCats <- as.character(round(iris_many_levels$Sepal.Width * 100))
+# Check number of levels (should be > 15)
+print(paste("Number of unique values for ManyCats:", length(unique(iris_many_levels$ManyCats))))
+# Plot pairwise with Sepal.Length as response
+# Should print a message for 'ManyCats' and skip its plot
+plot_descrip(iris_many_levels[, c("Sepal.Length", "Petal.Length", "ManyCats")], type = "pair")
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}

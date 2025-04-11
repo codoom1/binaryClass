@@ -7,6 +7,7 @@
 plot_model_rocs(
   results,
   comparison = FALSE,
+  multi_panel = FALSE,
   save_plot = FALSE,
   pdf_filename = "roc_curves.pdf",
   plot_title = NULL
@@ -16,6 +17,8 @@ plot_model_rocs(
 \item{results}{A list returned by OptimalModelSearch with criterion="AUC"}
 
 \item{comparison}{Logical indicating whether to plot all models for comparison. Default is FALSE.}
+
+\item{multi_panel}{Logical indicating whether to display each model in its own panel when comparison=TRUE. Default is FALSE.}
 
 \item{save_plot}{Logical indicating whether to save the plot to a PDF file. Default is FALSE.}
 
@@ -57,7 +60,10 @@ result <- OptimalModelSearch(formula=Class~., data=dat, criterion="AUC")
 # Plot the best model's ROC curve
 plot_model_rocs(result)
 
-# Plot comparison of all models' ROC curves
+# Plot comparison of all models' ROC curves on one panel
 plot_model_rocs(result, comparison=TRUE)
+
+# Plot each model's ROC curve in its own panel
+plot_model_rocs(result, comparison=TRUE, multi_panel=TRUE)
 }
 }

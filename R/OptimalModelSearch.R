@@ -82,6 +82,7 @@
 #' @param suppress_warnings Logical indicating whether to suppress warnings during execution. Default is FALSE.
 #' @param plot_roc Logical indicating whether to automatically plot ROC curves when criterion is "AUC". Default is FALSE.
 #' @param plot_comparison Logical indicating whether to plot comparison of all models' ROC curves when plot_roc is TRUE. Default is FALSE.
+#' @param multi_panel Logical indicating whether to display each model in its own panel when plot_comparison is TRUE. Default is FALSE.
 #' @param plot_cm Logical indicating whether to automatically plot the confusion matrix when criterion is "Accuracy". Default is FALSE.
 #'
 #' @section Visualization Options:
@@ -150,9 +151,13 @@
 #' print(result_aic$performance_metric)
 #' print(result_aic$coefficients)
 #' }
+#'
+#' @usage OptimalModelSearch(formula, data, criterion = c("AUC", "Accuracy", "AIC"),
+#'                  training_percent = 0.8, threshold = 0.5, suppress_warnings = FALSE,
+#'                  plot_roc = FALSE, plot_comparison = FALSE, multi_panel = FALSE, plot_cm = FALSE)
 OptimalModelSearch = function(formula, data, criterion = c("AUC", "Accuracy", "AIC"), 
                            training_percent = 0.8, threshold = 0.5, suppress_warnings = FALSE,
-                           plot_roc = FALSE, plot_comparison = FALSE, plot_cm = FALSE){
+                           plot_roc = FALSE, plot_comparison = FALSE, multi_panel = FALSE, plot_cm = FALSE){
 #options(warn = -1, message = FALSE) # Avoid global option changes
 
 # Match argument for criterion
@@ -659,7 +664,7 @@ if(criterion == "AUC") {
 if (plot_roc && criterion == "AUC") {
   if (requireNamespace("binaryClass", quietly = TRUE)) {
     # Use the plot_model_rocs function if available
-    binaryClass::plot_model_rocs(results, comparison = plot_comparison)
+    binaryClass::plot_model_rocs(results, comparison = plot_comparison, multi_panel = multi_panel)
   } else {
     # Fallback to basic plotting if the function is not available
     # (this could happen during package development)

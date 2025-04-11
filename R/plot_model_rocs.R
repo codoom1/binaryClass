@@ -17,6 +17,7 @@
 #'
 #' @param results A list returned by OptimalModelSearch with criterion="AUC"
 #' @param comparison Logical indicating whether to plot all models for comparison. Default is FALSE.
+#' @param multi_panel Logical indicating whether to display each model in its own panel when comparison=TRUE. Default is FALSE.
 #' @param save_plot Logical indicating whether to save the plot to a PDF file. Default is FALSE.
 #' @param pdf_filename A character string specifying the name of the PDF file if
 #'   save_plot is TRUE. Default is "roc_curves.pdf".
@@ -39,11 +40,14 @@
 #' # Plot the best model's ROC curve
 #' plot_model_rocs(result)
 #'
-#' # Plot comparison of all models' ROC curves
+#' # Plot comparison of all models' ROC curves on one panel
 #' plot_model_rocs(result, comparison=TRUE)
+#'
+#' # Plot each model's ROC curve in its own panel
+#' plot_model_rocs(result, comparison=TRUE, multi_panel=TRUE)
 #' }
-plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE, 
-                            pdf_filename = "roc_curves.pdf", 
+plot_model_rocs <- function(results, comparison = FALSE, multi_panel = FALSE,
+                            save_plot = FALSE, pdf_filename = "roc_curves.pdf", 
                             plot_title = NULL) {
   
   # Check if results are from OptimalModelSearch with AUC criterion
@@ -65,7 +69,6 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
   # Set graphical parameters for better plots
   old_par <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(old_par), add = TRUE)
-  graphics::par(mar = c(5, 4, 4, 2) + 0.1)
   
   if (comparison) {
     # Get all ROC objects
@@ -74,11 +77,6 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
       warning("No multiple ROC objects found. Plotting only best model.")
       comparison <- FALSE
     } else {
-      # Set the title for comparison plot
-      if (is.null(plot_title)) {
-        plot_title <- "Comparison of ROC Curves"
-      }
-      
       # Define colors and legend text for each model
       model_names <- names(all_rocs)
       
@@ -109,42 +107,102 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
         return(paste(model_name, "(AUC =", model_auc, ")"))
       })
       
-      # Plot the first ROC curve with proper settings
-      plot(all_rocs[[1]], 
-           col = model_colors[1], 
-           lwd = 2,
-           main = plot_title,
-           xlab = "1 - Specificity (False Positive Rate)",
-           ylab = "Sensitivity (True Positive Rate)",
-           legacy.axes = TRUE,  # Use standard x-axis direction
-           asp = 1)  # Force aspect ratio to be 1
-      
-      # Add other ROC curves
-      if (length(model_names) > 1) {
-        for (i in 2:length(model_names)) {
-          plot(all_rocs[[i]], 
-               col = model_colors[i], 
-               lwd = 2, 
-               add = TRUE,
-               legacy.axes = TRUE)
+      if (multi_panel) {
+        # Set up multi-panel layout
+        n_models <- length(model_names)
+        if (n_models <= 3) {
+          graphics::par(mfrow = c(1, n_models))
+        } else if (n_models <= 6) {
+          graphics::par(mfrow = c(2, ceiling(n_models/2)))
+        } else {
+          graphics::par(mfrow = c(3, ceiling(n_models/3)))
         }
+        
+        # Set margins for multi-panel plots
+        graphics::par(mar = c(4, 4, 3, 1) + 0.1)
+        
+        # Plot each model in its own panel
+        for (i in 1:n_models) {
+          model_name <- model_names[i]
+          model_roc <- all_rocs[[model_name]]
+          model_auc <- round(as.numeric(pROC::auc(model_roc)), 3)
+          
+          panel_title <- paste("ROC for", model_name)
+          
+          # Plot the ROC curve
+          plot(model_roc, 
+               col = model_colors[i], 
+               lwd = 2.5,
+               main = panel_title,
+               xlab = "1 - Specificity (FPR)",
+               ylab = "Sensitivity (TPR)",
+               legacy.axes = TRUE,
+               asp = 1)
+          
+          # Add diagonal reference line
+          graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
+          
+          # Add grid for readability
+          graphics::grid(lty = "dotted", col = "lightgray")
+          
+          # Add AUC text
+          graphics::text(0.7, 0.2,
+                        paste("AUC =", model_auc),
+                        cex = 1.1,
+                        font = 2,
+                        col = model_colors[i])
+        }
+        
+        # Add a title to the entire plot
+        if (!is.null(plot_title)) {
+          graphics::mtext(plot_title, outer = TRUE, line = -1.5, cex = 1.2, font = 2)
+        }
+      } else {
+        # Set the title for comparison plot
+        if (is.null(plot_title)) {
+          plot_title <- "Comparison of ROC Curves"
+        }
+        
+        # Set margins for single panel plot
+        graphics::par(mar = c(5, 4, 4, 2) + 0.1)
+        
+        # Plot all ROC curves on a single panel
+        plot(all_rocs[[1]], 
+             col = model_colors[1], 
+             lwd = 2,
+             main = plot_title,
+             xlab = "1 - Specificity (False Positive Rate)",
+             ylab = "Sensitivity (True Positive Rate)",
+             legacy.axes = TRUE,  # Use standard x-axis direction
+             asp = 1)  # Force aspect ratio to be 1
+        
+        # Add other ROC curves
+        if (length(model_names) > 1) {
+          for (i in 2:length(model_names)) {
+            plot(all_rocs[[i]], 
+                 col = model_colors[i], 
+                 lwd = 2, 
+                 add = TRUE,
+                 legacy.axes = TRUE)
+          }
+        }
+        
+        # Add diagonal reference line
+        graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
+        
+        # Add grid for readability
+        graphics::grid(lty = "dotted", col = "lightgray")
+        
+        # Add a legend with a semi-transparent background and border
+        graphics::legend("bottomright", 
+                        legend = legend_text, 
+                        col = model_colors[1:length(model_names)], 
+                        lwd = 2,
+                        bg = "#FFFFFFCC",  # White with alpha transparency
+                        box.col = "darkgray",
+                        box.lwd = 1,
+                        cex = 0.8)
       }
-      
-      # Add diagonal reference line
-      graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
-      
-      # Add grid for readability
-      graphics::grid(lty = "dotted", col = "lightgray")
-      
-      # Add a legend with a semi-transparent background and border
-      graphics::legend("bottomright", 
-                      legend = legend_text, 
-                      col = model_colors[1:length(model_names)], 
-                      lwd = 2,
-                      bg = "#FFFFFFCC",  # White with alpha transparency
-                      box.col = "darkgray",
-                      box.lwd = 1,
-                      cex = 0.8)
       
       # Return all ROCs invisibly
       return(invisible(all_rocs))
@@ -157,6 +215,9 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
     if (is.null(plot_title)) {
       plot_title <- paste("ROC Curve for", results$best_model_name)
     }
+    
+    # Set margins for single model plot
+    graphics::par(mar = c(5, 4, 4, 2) + 0.1)
     
     # Plot the ROC curve with improved appearance
     plot(best_roc, 

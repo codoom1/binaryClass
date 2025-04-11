@@ -23,6 +23,9 @@
 #' When \code{refit=TRUE} (the default), the function refits the model on the complete dataset
 #' for improved prediction performance.
 #'
+#' Note: For glmnet models (lasso and ridge), use the \code{\link{predict_model}} function 
+#' instead of \code{predict()} directly to handle the data format conversions automatically.
+#'
 #' @export
 #' @keywords models regression
 #' @concept binary classification
@@ -32,8 +35,10 @@
 #' @concept model extraction
 #' @concept model refitting
 #' @aliases get_best_model model_extraction
-#' @seealso \code{\link{OptimalModelSearch}} for generating the results object
-#' @importFrom stats glm binomial step predict reformulate
+#' @seealso 
+#'   \code{\link{OptimalModelSearch}} for generating the results object
+#'   \code{\link{predict_model}} for making predictions with extracted models
+#' @importFrom stats glm binomial step predict reformulate model.matrix
 #' @importFrom mgcv gam
 #' @importFrom glmnet cv.glmnet glmnet
 #'
@@ -52,8 +57,9 @@
 #' # Extract the best model
 #' best_model <- extract_best_model(result, dat)
 #' 
-#' # Use the model for prediction
-#' predictions <- predict(best_model, newdata=dat[1:5,], type="response")
+#' # Use the predict_model function for prediction (works for all model types)
+#' predictions <- predict_model(best_model, newdata=dat[1:5,], 
+#'                             formula=Class~., type="response")
 #' print(predictions)
 #' 
 #' # Examine model coefficients (if applicable to the model type)
@@ -102,7 +108,11 @@ extract_best_model <- function(results, data, refit = TRUE) {
     if ("models" %in% names(attributes(results))) {
       stored_models <- attr(results, "models")
       if (best_model_name %in% names(stored_models)) {
-        return(stored_models[[best_model_name]])
+        model <- stored_models[[best_model_name]]
+        # Store model_type as an attribute for later reference
+        attr(model, "model_type") <- model_type
+        attr(model, "original_formula") <- formula
+        return(model)
       }
     }
     warning("Stored model not found. Refitting model even though refit=FALSE")
@@ -172,5 +182,100 @@ extract_best_model <- function(results, data, refit = TRUE) {
     stop(paste("Unrecognized model type:", model_type))
   )
   
+  # Store model_type as an attribute for later reference
+  attr(model, "model_type") <- model_type
+  attr(model, "original_formula") <- formula
+  
   return(model)
+}
+
+#' Make predictions from a model extracted by extract_best_model
+#'
+#' This function provides a unified interface for making predictions with any
+#' model type returned by the extract_best_model function, handling the 
+#' appropriate data formatting for each model type.
+#'
+#' @param model A model object returned by extract_best_model
+#' @param newdata A data frame containing the new data for prediction
+#' @param formula The formula used to fit the model (required for glmnet models)
+#' @param type The type of prediction to return, usually "response" for probabilities
+#' @param ... Additional arguments passed to the underlying predict method
+#'
+#' @return A vector of predictions
+#'
+#' @details
+#' This function automatically detects the model type and applies the appropriate
+#' prediction method. For glmnet models (lasso and ridge), it handles the conversion
+#' of the data frame to a model matrix as required by the predict.cv.glmnet method.
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' # Extract the best model from OptimalModelSearch results
+#' best_model <- extract_best_model(result, data)
+#' 
+#' # Make predictions on new data
+#' predictions <- predict_model(best_model, newdata = new_data, 
+#'                             formula = y ~ x1 + x2)
+#' }
+predict_model <- function(model, newdata, formula = NULL, type = "response", ...) {
+  if (missing(newdata)) {
+    stop("newdata must be provided for prediction")
+  }
+  
+  # Try to get model type from model attributes
+  model_type <- attr(model, "model_type")
+  original_formula <- attr(model, "original_formula")
+  
+  # If formula is explicitly provided, use it
+  if (!is.null(formula)) {
+    use_formula <- formula
+  } else if (!is.null(original_formula)) {
+    use_formula <- original_formula
+  } else {
+    # For non-glmnet models, formula might not be needed
+    use_formula <- NULL
+  }
+  
+  # Handle prediction based on model type
+  if (!is.null(model_type) && model_type %in% c("lasso", "ridge")) {
+    # For glmnet models, we need to convert to model matrix
+    if (is.null(use_formula)) {
+      stop("Formula is required for prediction with lasso/ridge models")
+    }
+    
+    # Convert newdata to model matrix
+    x_new <- stats::model.matrix(use_formula, newdata)[, -1]  # Remove intercept
+    
+    # Make prediction
+    pred <- predict(model, newx = x_new, s = "lambda.min", type = type, ...)
+    
+    # Return as vector (not matrix)
+    if (is.matrix(pred)) {
+      return(as.vector(pred))
+    } else {
+      return(pred)
+    }
+  } else if (inherits(model, "cv.glmnet")) {
+    # Handle case when model_type is not set but model is glmnet
+    if (is.null(use_formula)) {
+      stop("Formula is required for prediction with glmnet models")
+    }
+    
+    # Convert newdata to model matrix
+    x_new <- stats::model.matrix(use_formula, newdata)[, -1]  # Remove intercept
+    
+    # Make prediction
+    pred <- predict(model, newx = x_new, s = "lambda.min", type = type, ...)
+    
+    # Return as vector (not matrix)
+    if (is.matrix(pred)) {
+      return(as.vector(pred))
+    } else {
+      return(pred)
+    }
+  } else {
+    # For standard models, use standard predict
+    return(predict(model, newdata = newdata, type = type, ...))
+  }
 } 

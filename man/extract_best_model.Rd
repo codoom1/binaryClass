@@ -42,6 +42,9 @@ of coefficients, or any other analysis typically performed on the respective mod
 
 When \code{refit=TRUE} (the default), the function refits the model on the complete dataset
 for improved prediction performance.
+
+Note: For glmnet models (lasso and ridge), use the \code{\link{predict_model}} function 
+instead of \code{predict()} directly to handle the data format conversions automatically.
 }
 \examples{
 \dontrun{
@@ -58,8 +61,9 @@ result <- OptimalModelSearch(formula=Class~., data=dat,
 # Extract the best model
 best_model <- extract_best_model(result, dat)
 
-# Use the model for prediction
-predictions <- predict(best_model, newdata=dat[1:5,], type="response")
+# Use the predict_model function for prediction (works for all model types)
+predictions <- predict_model(best_model, newdata=dat[1:5,], 
+                            formula=Class~., type="response")
 print(predictions)
 
 # Examine model coefficients (if applicable to the model type)
@@ -70,6 +74,7 @@ if(inherits(best_model, "glm") || inherits(best_model, "gam")) {
 }
 \seealso{
 \code{\link{OptimalModelSearch}} for generating the results object
+  \code{\link{predict_model}} for making predictions with extracted models
 }
 \concept{binary classification}
 \concept{model extraction}

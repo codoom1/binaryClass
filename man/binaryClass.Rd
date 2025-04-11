@@ -27,6 +27,15 @@ classification approaches.
 }
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/codoom1/binaryClass}
+  \item \url{https://codoom1.github.io/binaryClass/}
+  \item Report bugs at \url{https://github.com/codoom1/binaryClass/issues}
+}
+
+}
 \concept{AUC}
 \concept{ROC curve}
 \concept{binary classification}

@@ -17,9 +17,10 @@ jobs:
       contents: write
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - uses: r-lib/actions/setup-pandoc@v2
       
@@ -34,10 +35,22 @@ jobs:
             any::devtools
             any::roxygen2
             any::pkgbuild
+            any::rcmdcheck
+            any::testthat
           needs: workflow
       
       - name: Document
         run: roxygen2::roxygenise()
+        shell: Rscript {0}
+      
+      - name: Check
+        run: |
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
+        shell: Rscript {0}
+          
+      - name: Test
+        run: |
+          devtools::test()
         shell: Rscript {0}
       
       - name: Build package
@@ -45,16 +58,21 @@ jobs:
         run: |
           pkg_file <- pkgbuild::build()
           pkg_name <- basename(pkg_file)
-          # Use the new GITHUB_OUTPUT environment file approach
-          writeLines(paste0("pkg_file=", pkg_file), Sys.getenv("GITHUB_OUTPUT"))
-          writeLines(paste0("pkg_name=", pkg_name), Sys.getenv("GITHUB_OUTPUT"))
+          # Get the full path of the file
+          full_path <- normalizePath(pkg_file)
+          cat("Full package path:", full_path, "\n")
+          
+          # Write to GitHub output
+          cat("pkg_file=", full_path, "\n", file=Sys.getenv("GITHUB_OUTPUT"), sep="")
+          cat("pkg_name=", pkg_name, "\n", file=Sys.getenv("GITHUB_OUTPUT"), append=TRUE, sep="")
         shell: Rscript {0}
       
       - name: Upload package artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: r-package
           path: ${{ steps.build.outputs.pkg_file }}
+          retention-days: 30
       
       - name: Deploy to gh-pages
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
@@ -75,6 +93,12 @@ jobs:
           <html>
             <head>
               <title>binaryClass R Package</title>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <style>
+                body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+                pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+              </style>
             </head>
             <body>
               <h1>binaryClass R Package</h1>
@@ -82,6 +106,7 @@ jobs:
               <pre>
           install.packages("https://codoom1.github.io/binaryClass/${{ steps.build.outputs.pkg_name }}", repos = NULL)
               </pre>
+              <p>Released: $(date +'%Y-%m-%d')</p>
             </body>
           </html>
           EOF
@@ -91,3 +116,4 @@ jobs:
           git commit -m "Update package to latest version"
           
           # Force push to gh-pages 
+          git push --force origin gh-pages 

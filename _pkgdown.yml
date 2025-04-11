@@ -1,27 +1,38 @@
 url: https://codoom1.github.io/binaryClass/
 template:
   bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    primary: "#0054AD"
+    navbar-light-brand-color: "#0054AD"
+    navbar-light-brand-hover-color: "#0054AD"
+    navbar-light-hover-color: "#0054AD"
 
 navbar:
   structure:
-    left:  [intro, reference, articles, tutorials, news]
+    left: [home, reference, articles]
     right: [github]
   components:
-    intro:
-      text: Introduction
+    home:
+      icon: fas fa-home fa-lg
       href: index.html
     reference:
       text: Reference
       href: reference/index.html
     github:
-      icon: fab fa-github
+      icon: fab fa-github fa-lg
       href: https://github.com/codoom1/binaryClass
-      
+
 reference:
-  - title: "Binary Classification Functions"
-    desc: >
-      Functions for binary classification analysis
+  - title: "Model Selection"
+    desc: "Functions for selecting optimal binary classification models"
     contents:
       - OptimalModelSearch
+      - extract_best_model
+  - title: "Visualization"
+    desc: "Functions for visualizing model performance"
+    contents:
       - compare_model_rocs
+      - plot_model_cm
+      - plot_model_rocs
       - plot_descrip 

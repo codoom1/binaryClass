@@ -1,0 +1,60 @@
+# R package specific files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+*.Rproj
+*-Ex.R
+
+# Build files
+*.tar.gz
+*.tgz
+*.zip
+*.Rcheck/
+..Rcheck/
+*_*.tar.gz
+*_*.tgz
+
+# Output files
+*.o
+*.so
+*.dll
+*.pyc
+*.pyo
+__pycache__/
+*.DS_Store
+Rplots.pdf
+*.out
+*.rds
+
+# Documentation
+doc/
+docs/
+Meta/
+vignettes/*.html
+vignettes/*.pdf
+
+# Log files
+*.log
+
+# Local files
+.local/
+local/
+
+# Test outputs
+tests/testthat/testdata/
+tests/testthat/_snaps/
+tests/testthat/*.rds
+
+# Editor specific
+.idea/
+.vscode/
+*.swp
+*.swo
+*.kate-swp
+.directory
+.project
+.settings/
+.classpath
+.Rproj.user 

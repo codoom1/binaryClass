@@ -1,0 +1,16 @@
+^\.git$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.gitignore$
+^README\.md$
+^cran-comments\.md$
+^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$
+^\.Rproj\.user$
+^.*\.Rproj$
+^Rplots\.pdf$
+^LICENSE\.md$
+^CRAN-SUBMISSION$ 

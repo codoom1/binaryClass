@@ -2,8 +2,8 @@ Package: binaryClass
 Type: Package
 Title: Binary Classification Package
 Version: 1.0.0
-Author: Christopher Odoom, Denis Folitse, Owen Gallagher & Paul Shannon
-Maintainer: Christopher Odoom <codoom@umass.edu>, Denis Folitse <dfolitse@umass.edu>
+Author: Christopher Odoom [aut, cre], Denis Folitse [aut], Owen Gallagher [aut], Paul Shannon [aut]
+Maintainer: Christopher Odoom <codoom@umass.edu>
 Description: 
     The binaryClass package provides functions and tools for binary classification tasks. 
     It includes functions for model training, evaluation, and prediction. 

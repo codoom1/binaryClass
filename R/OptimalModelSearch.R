@@ -150,6 +150,12 @@
 #' print(result_aic$best_model_name)
 #' print(result_aic$performance_metric)
 #' print(result_aic$coefficients)
+#'
+#' # Plot all ROC curves in separate panels - clearer visualization
+#' result <- OptimalModelSearch(formula=Class~., data=dat,
+#'                           criterion="AUC", training_percent=0.8,
+#'                           suppress_warnings=TRUE, plot_roc=TRUE, 
+#'                           plot_comparison=TRUE, multi_panel=TRUE)
 #' }
 #'
 #' @usage OptimalModelSearch(formula, data, criterion = c("AUC", "Accuracy", "AIC"),

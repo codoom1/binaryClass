@@ -68,7 +68,25 @@ extract_best_model <- function(results, data, refit = TRUE) {
   
   # Identify the best model type
   best_model_name <- results$best_model_name
-  model_type <- strsplit(best_model_name, "\\.")[[1]][1]
+  
+  # Extract the base model type (removing any criterion suffixes)
+  # This handles cases like "full.glm.Accuracy"
+  model_parts <- strsplit(best_model_name, "\\.")[[1]]
+  if (length(model_parts) > 1) {
+    # If the last part is the same as the criterion, remove it
+    if (tolower(model_parts[length(model_parts)]) == tolower(results$criterion)) {
+      model_parts <- model_parts[-length(model_parts)]
+    }
+    
+    # Check if the model type is two parts (e.g., "full.glm")
+    if (length(model_parts) >= 2 && model_parts[2] == "glm") {
+      model_type <- paste(model_parts[1:2], collapse=".")
+    } else {
+      model_type <- model_parts[1]
+    }
+  } else {
+    model_type <- model_parts[1]
+  }
   
   # If not refitting, check if we have stored models
   if (!refit) {
@@ -85,6 +103,8 @@ extract_best_model <- function(results, data, refit = TRUE) {
   model <- switch(
     model_type,
     "full" = stats::glm(formula, data = data, family = stats::binomial),
+    
+    "full.glm" = stats::glm(formula, data = data, family = stats::binomial),
     
     "backward" = {
       full_model <- stats::glm(formula, data = data, family = stats::binomial)

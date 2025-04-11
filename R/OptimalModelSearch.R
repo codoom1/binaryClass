@@ -512,12 +512,13 @@ if(criterion == "AUC") {
     accuracies <- c(accuracies, gam = gam_accuracy)
   }
   
-  # Find the name of the model with the highest accuracy
+  # Find the best model based on the highest accuracy
   best_model <- names(which.max(accuracies))
+  best_metric <- max(accuracies)
   
   # Store results
-  results$best_model_name <- paste0(best_model, ".Accuracy")
-  results$performance_metric <- accuracies[[best_model]]
+  results$best_model_name <- best_model
+  results$performance_metric <- best_metric
   
   # Store the best model object, coefficients, and confusion matrix
   if (best_model == "full.glm") {

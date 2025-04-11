@@ -11,7 +11,7 @@ This function does binary classification model selection. It compares multiple m
 \usage{
 OptimalModelSearch(formula, data, criterion = c("AUC", "Accuracy", "AIC"),
                    training_percent = 0.8, threshold = 0.5, suppress_warnings = FALSE,
-                   plot_roc = FALSE, plot_comparison = FALSE, plot_cm = FALSE)
+                   plot_roc = FALSE, plot_comparison = FALSE, multi_panel = FALSE, plot_cm = FALSE)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -35,6 +35,8 @@ The default is 0.5 }
 \item{plot_roc}{ Logical indicating whether to automatically plot ROC curves when criterion is "AUC". Default is FALSE. When TRUE, it will display the ROC curve of the best model. }
 
 \item{plot_comparison}{ Logical indicating whether to plot comparison of all models' ROC curves when plot_roc is TRUE. Default is FALSE. When TRUE, it will display ROC curves for all models on a single plot. }
+
+\item{multi_panel}{ Logical indicating whether to display each model in its own panel when plot_comparison is TRUE. Default is FALSE. When TRUE, it will display each model's ROC curve in a separate panel arranged in a grid layout. }
 
 \item{plot_cm}{ Logical indicating whether to automatically plot the confusion matrix when criterion is "Accuracy". Default is FALSE. When TRUE, it will display a visual representation of the confusion matrix for the best model. }
 
@@ -63,6 +65,7 @@ The function provides automatic visualization based on the chosen criterion:
 \itemize{
   \item When criterion="AUC": Use plot_roc=TRUE to display the ROC curve of the best model,
         or with plot_comparison=TRUE to compare all models' ROC curves.
+        Use multi_panel=TRUE for clearer visualization with separate panels for each model.
   \item When criterion="Accuracy": Use plot_cm=TRUE to display the confusion matrix
         of the best model, showing true/false positives/negatives and other metrics.
   \item When criterion="AIC": No visualization is provided as AIC is a numerical measure.
@@ -126,6 +129,18 @@ result <- OptimalModelSearch(formula=diabetes~., data=data.t,
                             criterion="AIC", training_percent=0.8,
                             suppress_warnings=TRUE)
 result$best_model_name  # View best model
+}
+
+##==Example 4: ROC Visualization with Multi-Panel Plot====##
+\donttest{
+data(Sonar, package="mlbench")
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
+# Plot all ROC curves in separate panels - clearer visualization
+result <- OptimalModelSearch(formula=Class~., data=dat,
+                          criterion="AUC", training_percent=0.8,
+                          suppress_warnings=TRUE, plot_roc=TRUE, 
+                          plot_comparison=TRUE, multi_panel=TRUE)
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

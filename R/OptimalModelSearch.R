@@ -731,6 +731,9 @@ if (plot_cm && criterion == "Accuracy") {
 # Reset warning settings to original state at the end
 on.exit(options(warn = old_warn$warn), add = TRUE)
   
+# Store the formula as an attribute for extract_best_model function
+attr(results, "formula") <- deparse(formula)
+  
 # Return results
 return(results)
 }

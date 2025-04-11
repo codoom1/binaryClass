@@ -11,6 +11,8 @@ Description:
     Example datasets and utility functions are also included. This package also provides a function
     for descriptive analysis. It does so by making plots based on user specifications.
 License: MIT + file LICENSE
+URL: https://github.com/codoom1/binaryClass, https://codoom1.github.io/binaryClass/
+BugReports: https://github.com/codoom1/binaryClass/issues
 Encoding: UTF-8
 Imports:
     glmnet,

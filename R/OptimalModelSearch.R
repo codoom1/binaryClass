@@ -4,62 +4,66 @@
 #' @keywords internal
 #' @export
 .draw_confusion_matrix <- function(cm) {
+  # Setup layout for the plot
+  current_par <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(current_par), add = TRUE)
+  
+  graphics::layout(matrix(c(1,1,2)))
+  graphics::par(mar=c(2,2,2,2))
+  graphics::plot(c(100, 345), c(300, 450), type = "n", xlab="", ylab="", xaxt='n', yaxt='n')
+  graphics::title('CONFUSION MATRIX', cex.main=2)
 
-    graphics::layout(base::matrix(c(1,1,2)))
-    graphics::par(mar=c(2,2,2,2))
-    graphics::plot(c(100, 345), c(300, 450), type = "n", xlab="", ylab="", xaxt='n', yaxt='n')
-    graphics::title('CONFUSION MATRIX', cex.main=2)
+  # create the matrix
+  graphics::rect(150, 430, 240, 370, col='#3F97D0')
+  graphics::text(195, 435, '0', cex=1.2)
+  graphics::rect(250, 430, 340, 370, col='#F7AD50')
+  graphics::text(295, 435, '1', cex=1.2)
+  graphics::text(125, 370, 'Predicted', cex=1.3, srt=90, font=2)
+  graphics::text(245, 450, 'Actual', cex=1.3, font=2)
+  graphics::rect(150, 305, 240, 365, col='#F7AD50')
+  graphics::rect(250, 305, 340, 365, col='#3F97D0')
+  graphics::text(140, 400, '0', cex=1.2, srt=90)
+  graphics::text(140, 335, '1', cex=1.2, srt=90)
 
-    # create the matrix
-    graphics::rect(150, 430, 240, 370, col='#3F97D0')
-    graphics::text(195, 435, '0', cex=1.2)
-    graphics::rect(250, 430, 340, 370, col='#F7AD50')
-    graphics::text(295, 435, '1', cex=1.2)
-    graphics::text(125, 370, 'Predicted', cex=1.3, srt=90, font=2)
-    graphics::text(245, 450, 'Actual', cex=1.3, font=2)
-    graphics::rect(150, 305, 240, 365, col='#F7AD50')
-    graphics::rect(250, 305, 340, 365, col='#3F97D0')
-    graphics::text(140, 400, '0', cex=1.2, srt=90)
-    graphics::text(140, 335, '1', cex=1.2, srt=90)
+  # add in the cm results
+  res <- as.numeric(cm$table)
+  graphics::text(195, 400, res[1], cex=1.6, font=2, col='white')
+  graphics::text(195, 335, res[2], cex=1.6, font=2, col='white')
+  graphics::text(295, 400, res[3], cex=1.6, font=2, col='white')
+  graphics::text(295, 335, res[4], cex=1.6, font=2, col='white')
 
-    # add in the cm results
-    res <- as.numeric(cm$table)
-    graphics::text(195, 400, res[1], cex=1.6, font=2, col='white')
-    graphics::text(195, 335, res[2], cex=1.6, font=2, col='white')
-    graphics::text(295, 400, res[3], cex=1.6, font=2, col='white')
-    graphics::text(295, 335, res[4], cex=1.6, font=2, col='white')
+  # add in the specifics
+  graphics::plot(c(100, 0), c(100, 0), type = "n", xlab="", ylab="", main = "DETAILS", xaxt='n', yaxt='n')
+  graphics::text(10, 85, names(cm$byClass[1]), cex=1.2, font=2)
+  graphics::text(10, 70, round(as.numeric(cm$byClass[1]), 3), cex=1)
+  graphics::text(30, 85, names(cm$byClass[2]), cex=1.2, font=2)
+  graphics::text(30, 70, round(as.numeric(cm$byClass[2]), 3), cex=1)
 
-    # add in the specifics
-    graphics::plot(c(100, 0), c(100, 0), type = "n", xlab="", ylab="", main = "DETAILS", xaxt='n', yaxt='n')
-    graphics::text(10, 85, names(cm$byClass[1]), cex=1.2, font=2)
-    graphics::text(10, 70, round(as.numeric(cm$byClass[1]), 3), cex=1)
-    graphics::text(30, 85, names(cm$byClass[2]), cex=1.2, font=2)
-    graphics::text(30, 70, round(as.numeric(cm$byClass[2]), 3), cex=1)
+  graphics::text(50, 85, names(cm$byClass[3]), cex=1.2, font=2)
+  graphics::text(50, 70, round(as.numeric(cm$byClass[3]), 3), cex=1)
 
-    graphics::text(50, 85, names(cm$byClass[3]), cex=1.2, font=2)
-    graphics::text(50, 70, round(as.numeric(cm$byClass[3]), 3), cex=1)
+  graphics::text(73, 85, names(cm$byClass[4]), cex=1.2, font=2)
+  graphics::text(73, 70, round(as.numeric(cm$byClass[4]), 3), cex=1)
 
-    graphics::text(73, 85, names(cm$byClass[4]), cex=1.2, font=2)
-    graphics::text(73, 70, round(as.numeric(cm$byClass[4]), 3), cex=1)
+  graphics::text(93, 85, names(cm$byClass[8]), cex=1.2, font=2)
+  graphics::text(93, 70, round(as.numeric(cm$byClass[8]), 3), cex=1)
 
-    graphics::text(93, 85, names(cm$byClass[8]), cex=1.2, font=2)
-    graphics::text(93, 70, round(as.numeric(cm$byClass[8]), 3), cex=1)
+  # add in the accuracy information
+  graphics::text(10, 35, names(cm$byClass[9]), cex=1.2, font=2)
+  graphics::text(10, 17, round(as.numeric(cm$byClass[9]), 3), cex=1.2)
 
-    # add in the accuracy information
-    graphics::text(10, 35, names(cm$byClass[9]), cex=1.2, font=2)
-    graphics::text(10, 17, round(as.numeric(cm$byClass[9]), 3), cex=1.2)
+  graphics::text(30, 35, names(cm$overall[1]), cex=1.2, font=2)
+  graphics::text(30, 17, round(as.numeric(cm$overall[1]), 3), cex=1.2)
 
-    graphics::text(30, 35, names(cm$overall[1]), cex=1.2, font=2)
-    graphics::text(30, 17, round(as.numeric(cm$overall[1]), 3), cex=1.2)
+  graphics::text(70, 35, names(cm$overall[2]), cex=1.2, font=2)
+  graphics::text(70, 17, round(as.numeric(cm$overall[2]), 3), cex=1.2)
 
-    graphics::text(70, 35, names(cm$overall[2]), cex=1.2, font=2)
-    graphics::text(70, 17, round(as.numeric(cm$overall[2]), 3), cex=1.2)
+  graphics::text(90, 35, names(cm$byClass[11]), cex=1.2, font=2)
+  graphics::text(90, 17, round(as.numeric(cm$byClass[11]), 3), cex=1.2)
 
-    graphics::text(90, 35, names(cm$byClass[11]), cex=1.2, font=2)
-    graphics::text(90, 17, round(as.numeric(cm$byClass[11]), 3), cex=1.2)
-
-    invisible(NULL) # Explicitly return NULL invisibly
-  }
+  # Return a placeholder for the plot
+  return(TRUE)
+}
 
 #' Find the Optimal Binary Classification Model
 #'
@@ -113,6 +117,22 @@
 #'       }
 #'   }
 #' @export
+#' @keywords models regression classification prediction optimization
+#' @concept binary classification
+#' @concept model selection
+#' @concept model comparison
+#' @concept ROC curve
+#' @concept AUC
+#' @concept Accuracy
+#' @concept AIC
+#' @concept logistic regression
+#' @concept stepwise regression
+#' @concept lasso
+#' @concept ridge regression
+#' @concept GAM
+#' @concept regularization
+#' @aliases model_selection optimal_model binary_classifier best_model_search
+#' @seealso \code{\link{extract_best_model}} for extracting the best model from results
 #' @importFrom stats glm predict model.matrix na.omit coef step binomial rnorm terms complete.cases as.formula AIC
 #' @importFrom utils head
 #' @importFrom graphics plot text abline legend
@@ -714,19 +734,20 @@ if (plot_roc && criterion == "AUC") {
 
 # If plot_cm is TRUE and criterion is "Accuracy", plot the confusion matrix
 if (plot_cm && criterion == "Accuracy") {
-  if (requireNamespace("binaryClass", quietly = TRUE)) {
-    # Use the plot_model_cm function if available
-    tryCatch({
-      binaryClass::plot_model_cm(results)
-    }, error = function(e) {
-      # Fallback to basic caret confusion matrix printing
-      print(results$details)
-      warning("Could not plot confusion matrix with plot_model_cm: ", e$message)
-    })
-  } else {
-    # Fallback to basic caret confusion matrix plotting
+  # Use the internal .draw_confusion_matrix function to plot
+  tryCatch({
+    # Print some debug information
+    cat("Plotting confusion matrix...\n")
+    cat("Dimensions of details object:", dim(results$details$table), "\n")
+    
+    # Force plotting in RStudio using print
+    print(.draw_confusion_matrix(results$details))
+    cat("Confusion matrix plot completed.\n")
+  }, error = function(e) {
+    # Fallback to basic caret confusion matrix printing
     print(results$details)
-  }
+    warning("Could not plot confusion matrix: ", e$message)
+  })
 }
 
 # Reset warning settings to original state at the end

@@ -2,6 +2,8 @@
 % Please edit documentation in R/OptimalModelSearch.R, R/extract_best_model.R
 \name{extract_best_model}
 \alias{extract_best_model}
+\alias{get_best_model}
+\alias{model_extraction}
 \title{Extract the best model from the results of OptimalModelSearch}
 \usage{
 extract_best_model(results, data, refit = TRUE)
@@ -66,3 +68,14 @@ if(inherits(best_model, "glm") || inherits(best_model, "gam")) {
 }
 }
 }
+\seealso{
+\code{\link{OptimalModelSearch}} for generating the results object
+}
+\concept{binary classification}
+\concept{model extraction}
+\concept{model refitting}
+\concept{model selection}
+\concept{optimal model}
+\concept{prediction}
+\keyword{models}
+\keyword{regression}

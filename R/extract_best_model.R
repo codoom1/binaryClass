@@ -24,6 +24,15 @@
 #' for improved prediction performance.
 #'
 #' @export
+#' @keywords models regression
+#' @concept binary classification
+#' @concept model selection
+#' @concept optimal model
+#' @concept prediction
+#' @concept model extraction
+#' @concept model refitting
+#' @aliases get_best_model model_extraction
+#' @seealso \code{\link{OptimalModelSearch}} for generating the results object
 #' @importFrom stats glm binomial step predict reformulate
 #' @importFrom mgcv gam
 #' @importFrom glmnet cv.glmnet glmnet

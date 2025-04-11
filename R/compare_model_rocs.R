@@ -45,6 +45,18 @@
 #'   }
 #'
 #' @export
+#' @keywords models hplot
+#' @concept ROC curve
+#' @concept binary classification
+#' @concept model comparison
+#' @concept AUC comparison
+#' @concept regularization
+#' @concept model evaluation
+#' @concept visualization
+#' @concept performance comparison
+#' @aliases roc_comparison roc_curves compare_rocs plot_roc_curves
+#' @seealso \code{\link{OptimalModelSearch}} for more comprehensive model selection,
+#'   \code{\link{plot_model_rocs}} for plotting ROC curves from OptimalModelSearch results
 #' @importFrom graphics plot lines abline grid points legend par title
 #' @importFrom stats predict glm binomial
 #' @import pROC glmnet

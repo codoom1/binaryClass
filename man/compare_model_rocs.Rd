@@ -2,6 +2,10 @@
 % Please edit documentation in R/compare_model_rocs.R
 \name{compare_model_rocs}
 \alias{compare_model_rocs}
+\alias{roc_comparison}
+\alias{roc_curves}
+\alias{compare_rocs}
+\alias{plot_roc_curves}
 \title{Compare ROC Curves for Different Binary Classification Models}
 \usage{
 compare_model_rocs(
@@ -104,3 +108,17 @@ oms_result <- OptimalModelSearch(formula=y ~ ., data=test_df,
                               plot_comparison=TRUE)
 }
 }
+\seealso{
+\code{\link{OptimalModelSearch}} for more comprehensive model selection,
+  \code{\link{plot_model_rocs}} for plotting ROC curves from OptimalModelSearch results
+}
+\concept{AUC comparison}
+\concept{ROC curve}
+\concept{binary classification}
+\concept{model comparison}
+\concept{model evaluation}
+\concept{performance comparison}
+\concept{regularization}
+\concept{visualization}
+\keyword{hplot}
+\keyword{models}

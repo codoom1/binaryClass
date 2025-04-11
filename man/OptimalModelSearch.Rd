@@ -95,53 +95,37 @@ Christopher Odoom, Denis Folitse, Owen Gallagher & Paul Shannon <codoom@umass.ed
 
 \examples{
 
-##==Example 1====##
-## Using the Accuracy criterion with confusion matrix visualization
+##==Example 1: Accuracy criterion====##
 \donttest{
-## Loading the PIMA Diabetes data
-require(mlbench)
-data(PimaIndiansDiabetes)
+data(PimaIndiansDiabetes, package="mlbench")
 data.t <- PimaIndiansDiabetes
-data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
+data.t$diabetes <- ifelse(data.t$diabetes=="neg", 0, 1)
 result <- OptimalModelSearch(formula=diabetes~., data=data.t,
                             criterion="Accuracy", training_percent=0.8, 
-                            threshold=0.54)
-# Simple output inspection
-result$criterion
-result$best_model_name
-result$performance_metric
+                            threshold=0.54, suppress_warnings=TRUE)
+result$best_model_name  # View best model
 }
 
-##==Example 2====##
-## Using the AUC criterion with ROC curve visualization
+##==Example 2: AUC criterion====##
 \donttest{
-library(mlbench)
-data(Sonar)
+data(Sonar, package="mlbench")
 dat <- Sonar
-dat$Class <- ifelse(dat$Class=="R",0,1)
-# Using suppress_warnings to prevent excessive convergence warnings
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
 result <- OptimalModelSearch(formula=Class~., data=dat,
                            criterion="AUC", training_percent=0.8,
                            suppress_warnings=TRUE)
-# Simple output inspection
-result$criterion
-result$best_model_name
-result$performance_metric
+result$best_model_name  # View best model
 }
 
-##==Example 3====##
-## Using AIC criterion
+##==Example 3: AIC criterion====##
 \donttest{
-require(mlbench)
-data(PimaIndiansDiabetes)
+data(PimaIndiansDiabetes, package="mlbench")
 data.t <- PimaIndiansDiabetes
-data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
+data.t$diabetes <- ifelse(data.t$diabetes=="neg", 0, 1)
 result <- OptimalModelSearch(formula=diabetes~., data=data.t,
-                            criterion="AIC", training_percent=0.8)
-# Simple output inspection
-result$criterion
-result$best_model_name
-result$performance_metric
+                            criterion="AIC", training_percent=0.8,
+                            suppress_warnings=TRUE)
+result$best_model_name  # View best model
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

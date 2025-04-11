@@ -1,0 +1,27 @@
+url: https://codoom1.github.io/binaryClass/
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, tutorials, news]
+    right: [github]
+  components:
+    intro:
+      text: Introduction
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    github:
+      icon: fab fa-github
+      href: https://github.com/codoom1/binaryClass
+      
+reference:
+  - title: "Binary Classification Functions"
+    desc: >
+      Functions for binary classification analysis
+    contents:
+      - OptimalModelSearch
+      - compare_model_rocs
+      - plot_descrip 

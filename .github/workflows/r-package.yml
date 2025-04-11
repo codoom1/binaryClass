@@ -1,0 +1,70 @@
+name: Build and Publish R Package
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+
+      - name: Install dependencies
+        run: |
+          install.packages(c("remotes", "roxygen2", "rcmdcheck", "devtools"))
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
+
+      - name: Document
+        run: |
+          roxygen2::roxygenise()
+        shell: Rscript {0}
+
+      - name: Check
+        run: |
+          rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "warning")
+        shell: Rscript {0}
+
+      - name: Build package
+        run: |
+          pkg_file <- devtools::build()
+          writeLines(pkg_file, "pkg_file.txt")
+        shell: Rscript {0}
+        
+      - name: Upload R package
+        uses: actions/upload-artifact@v3
+        with:
+          name: r-package
+          path: ${{ github.workspace }}/*.tar.gz
+          
+      - name: Publish to GitHub Packages
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
+        run: |
+          install.packages("gert")
+          pkg_file <- readLines("pkg_file.txt")
+          gert::git_config_set("user.name", "GitHub Actions")
+          gert::git_config_set("user.email", "actions@github.com")
+          
+          # Push to gh-pages branch for package distribution
+          system("git checkout --orphan gh-pages-staging")
+          system("git rm -rf .")
+          system(paste("cp", pkg_file, "."))
+          system("git add *.tar.gz")
+          system('git commit -m "Update package"')
+          system("git push -f origin gh-pages-staging:gh-pages")
+        shell: Rscript {0} 

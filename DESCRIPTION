@@ -24,7 +24,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    mlbench
+    mlbench,
+    RColorBrewer
 NeedsCompilation: no
 Packaged: 2023-11-28 04:06:53 UTC; christopherodoom
 RoxygenNote: 7.3.2

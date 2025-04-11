@@ -25,7 +25,7 @@
 #' @return The ROC plot is displayed and the ROC object(s) used are returned invisibly.
 #' @export
 #' @importFrom graphics plot text abline legend par
-#' @importFrom grDevices pdf dev.off
+#' @importFrom grDevices pdf dev.off colorRampPalette
 #'
 #' @examples
 #' \dontrun{
@@ -62,6 +62,11 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
     on.exit(grDevices::dev.off())
   }
   
+  # Set graphical parameters for better plots
+  old_par <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(old_par), add = TRUE)
+  graphics::par(mar = c(5, 4, 4, 2) + 0.1)
+  
   if (comparison) {
     # Get all ROC objects
     all_rocs <- attr(best_roc, "roc_list")
@@ -76,8 +81,25 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
       
       # Define colors and legend text for each model
       model_names <- names(all_rocs)
-      model_colors <- c("blue", "red", "green", "purple", "orange", "brown", "pink", "gray")
-      colors_to_use <- model_colors[1:min(length(model_names), length(model_colors))]
+      
+      # Use a better color palette with distinct colors
+      if (requireNamespace("RColorBrewer", quietly = TRUE)) {
+        # Use RColorBrewer if available
+        n_models <- length(model_names)
+        if (n_models <= 8) {
+          model_colors <- RColorBrewer::brewer.pal(max(3, n_models), "Set1")
+        } else {
+          model_colors <- RColorBrewer::brewer.pal(8, "Set1")
+          model_colors <- c(model_colors, RColorBrewer::brewer.pal(n_models - 8, "Set2"))
+        }
+      } else {
+        # Fallback to standard R colors
+        model_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF")
+        if (length(model_names) > length(model_colors)) {
+          color_func <- grDevices::colorRampPalette(model_colors)
+          model_colors <- color_func(length(model_names))
+        }
+      }
       
       # Create legend text with AUC values
       legend_text <- sapply(1:length(model_names), function(i) {
@@ -87,22 +109,42 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
         return(paste(model_name, "(AUC =", model_auc, ")"))
       })
       
-      # Initialize the plot with the first ROC curve
-      plot(all_rocs[[1]], col=colors_to_use[1], main=plot_title)
+      # Plot the first ROC curve with proper settings
+      plot(all_rocs[[1]], 
+           col = model_colors[1], 
+           lwd = 2,
+           main = plot_title,
+           xlab = "1 - Specificity (False Positive Rate)",
+           ylab = "Sensitivity (True Positive Rate)",
+           legacy.axes = TRUE,  # Use standard x-axis direction
+           asp = 1)  # Force aspect ratio to be 1
       
       # Add other ROC curves
       if (length(model_names) > 1) {
         for (i in 2:length(model_names)) {
-          plot(all_rocs[[i]], col=colors_to_use[i], add=TRUE)
+          plot(all_rocs[[i]], 
+               col = model_colors[i], 
+               lwd = 2, 
+               add = TRUE,
+               legacy.axes = TRUE)
         }
       }
       
       # Add diagonal reference line
-      graphics::abline(a=0, b=1, lty=2, col="gray")
+      graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
       
-      # Add a legend
-      graphics::legend("bottomright", legend=legend_text, 
-             col=colors_to_use, lwd=2)
+      # Add grid for readability
+      graphics::grid(lty = "dotted", col = "lightgray")
+      
+      # Add a legend with a semi-transparent background and border
+      graphics::legend("bottomright", 
+                      legend = legend_text, 
+                      col = model_colors[1:length(model_names)], 
+                      lwd = 2,
+                      bg = "#FFFFFFCC",  # White with alpha transparency
+                      box.col = "darkgray",
+                      box.lwd = 1,
+                      cex = 0.8)
       
       # Return all ROCs invisibly
       return(invisible(all_rocs))
@@ -116,13 +158,27 @@ plot_model_rocs <- function(results, comparison = FALSE, save_plot = FALSE,
       plot_title <- paste("ROC Curve for", results$best_model_name)
     }
     
-    # Plot the ROC curve
-    plot(best_roc, main=plot_title)
+    # Plot the ROC curve with improved appearance
+    plot(best_roc, 
+         main = plot_title,
+         col = "#377EB8",  # Use a nice blue color
+         lwd = 2.5,        # Thicker line for visibility
+         xlab = "1 - Specificity (False Positive Rate)",
+         ylab = "Sensitivity (True Positive Rate)",
+         legacy.axes = TRUE,  # Use standard x-axis direction
+         grid = TRUE,       # Add grid lines
+         asp = 1)           # Force aspect ratio to be 1
     
     # Add the AUC value to the plot
-    graphics::text(0.7, 0.2, 
-         paste("AUC =", round(as.numeric(results$performance_metric), 3)),
-         cex=0.9)
+    auc_value <- round(as.numeric(results$performance_metric), 3)
+    graphics::text(0.7, 0.2,
+                  paste("AUC =", auc_value),
+                  cex = 1.1,
+                  font = 2,
+                  col = "#377EB8")
+    
+    # Add diagonal reference line
+    graphics::abline(a = 0, b = 1, lty = 2, col = "gray")
     
     # Return the best ROC invisibly
     return(invisible(best_roc))

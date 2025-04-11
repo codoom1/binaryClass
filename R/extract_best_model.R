@@ -24,7 +24,7 @@
 #' for improved prediction performance.
 #'
 #' @export
-#' @importFrom stats glm binomial step predict
+#' @importFrom stats glm binomial step predict reformulate
 #' @importFrom mgcv gam
 #' @importFrom glmnet cv.glmnet glmnet
 #'

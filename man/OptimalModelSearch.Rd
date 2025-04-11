@@ -10,8 +10,10 @@ This function does binary classification model selection. It compares multiple m
 }
 \usage{
 OptimalModelSearch(formula, data, criterion = c("AUC", "Accuracy", "AIC"),
-                   training_percent = 0.8, threshold = 0.5, suppress_warnings = FALSE,
-                   plot_roc = FALSE, plot_comparison = FALSE, multi_panel = FALSE, plot_cm = FALSE)
+                   training_percent = 0.8, threshold = 0.5, 
+                   suppress_warnings = FALSE, plot_roc = FALSE, 
+                   plot_comparison = FALSE, multi_panel = FALSE, 
+                   plot_cm = FALSE)
 
 }
 %- maybe also 'usage' for other objects documented here.

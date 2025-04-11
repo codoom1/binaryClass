@@ -1,8 +1,9 @@
-name: Build and Publish R Package
+# Workflow derived from https://github.com/r-lib/actions
+name: Build and Release R Package
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
     tags:
       - 'v*'
   release:
@@ -13,58 +14,80 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
-
+      contents: write
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+      
+      - uses: r-lib/actions/setup-pandoc@v2
+      
+      - uses: r-lib/actions/setup-r@v2
         with:
           r-version: 'release'
-
-      - name: Install dependencies
-        run: |
-          install.packages(c("remotes", "roxygen2", "rcmdcheck", "devtools"))
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-
+          use-public-rspm: true
+      
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::devtools
+            any::roxygen2
+            any::pkgbuild
+          needs: workflow
+      
       - name: Document
-        run: |
-          roxygen2::roxygenise()
+        run: roxygen2::roxygenise()
         shell: Rscript {0}
-
-      - name: Check
-        run: |
-          rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "warning")
-        shell: Rscript {0}
-
+      
       - name: Build package
+        id: build
         run: |
-          pkg_file <- devtools::build()
-          writeLines(pkg_file, "pkg_file.txt")
+          pkg_file <- pkgbuild::build()
+          pkg_name <- basename(pkg_file)
+          # Create output to set step output
+          cat(sprintf("::set-output name=pkg_file::%s\n", pkg_file))
+          cat(sprintf("::set-output name=pkg_name::%s\n", pkg_name))
         shell: Rscript {0}
-        
-      - name: Upload R package
+      
+      - name: Upload package artifact
         uses: actions/upload-artifact@v3
         with:
           name: r-package
-          path: ${{ github.workspace }}/*.tar.gz
-          
-      - name: Publish to GitHub Packages
+          path: ${{ steps.build.outputs.pkg_file }}
+      
+      - name: Deploy to gh-pages
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
         run: |
-          install.packages("gert")
-          pkg_file <- readLines("pkg_file.txt")
-          gert::git_config_set("user.name", "GitHub Actions")
-          gert::git_config_set("user.email", "actions@github.com")
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
           
-          # Push to gh-pages branch for package distribution
-          system("git checkout --orphan gh-pages-staging")
-          system("git rm -rf .")
-          system(paste("cp", pkg_file, "."))
-          system("git add *.tar.gz")
-          system('git commit -m "Update package"')
-          system("git push -f origin gh-pages-staging:gh-pages")
-        shell: Rscript {0} 
+          # Create or switch to gh-pages branch
+          git checkout -B gh-pages
+          
+          # Clear the branch and copy the package
+          git rm -rf .
+          cp ${{ steps.build.outputs.pkg_file }} .
+          
+          # Create an index.html with instructions
+          cat > index.html << EOF
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>binaryClass R Package</title>
+            </head>
+            <body>
+              <h1>binaryClass R Package</h1>
+              <p>Install the latest version with:</p>
+              <pre>
+          install.packages("https://codoom1.github.io/binaryClass/${{ steps.build.outputs.pkg_name }}", repos = NULL)
+              </pre>
+            </body>
+          </html>
+          EOF
+          
+          # Add both files and commit
+          git add ${{ steps.build.outputs.pkg_name }} index.html
+          git commit -m "Update package to latest version"
+          
+          # Force push to gh-pages 

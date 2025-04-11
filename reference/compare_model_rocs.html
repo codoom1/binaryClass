@@ -19,9 +19,9 @@ It helps visualize the performance differences between models."></head><body>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html"><span class="fa fas fa-home fa-lg"></span></a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html" aria-label="Home"><span class="fa fas fa-home fa-lg"></span></a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/codoom1/binaryClass"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/codoom1/binaryClass" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -31,7 +31,7 @@ It helps visualize the performance differences between models."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Compare ROC Curves for Different Binary Classification Models</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/codoom1/binaryClass/blob/main/R/compare_model_rocs.R" class="external-link"><code>R/compare_model_rocs.R</code></a></small>
       <div class="d-none name"><code>compare_model_rocs.Rd</code></div>
     </div>
 
@@ -112,6 +112,11 @@ additionally includes backward stepwise, forward stepwise, and GAM models.</p>
 <li><p><code>plot_model_rocs(result)</code> where result is the output from OptimalModelSearch with AUC criterion</p></li>
 </ul><p>The approaches differ in that <code>compare_model_rocs</code> only compares stepwise, lasso and ridge,
 while <code>OptimalModelSearch</code> compares full GLM, backward stepwise, forward stepwise, GAM, lasso, and ridge.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="OptimalModelSearch.html">OptimalModelSearch</a></code> for more comprehensive model selection,
+  <code><a href="plot_model_rocs.html">plot_model_rocs</a></code> for plotting ROC curves from OptimalModelSearch results</p></div>
     </div>
 
     <div class="section level2">

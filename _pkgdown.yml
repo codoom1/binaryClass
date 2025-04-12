@@ -35,10 +35,15 @@ reference:
     contents:
       - OptimalModelSearch
       - extract_best_model
+  - title: "Prediction"
+    desc: "Functions for making predictions with models"
+    contents:
+      - predict_model
   - title: "Visualization"
     desc: "Functions for visualizing model performance"
     contents:
       - compare_model_rocs
       - plot_model_cm
       - plot_model_rocs
-      - plot_descrip 
+      - plot_descrip
+

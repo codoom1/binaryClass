@@ -70,153 +70,182 @@ plot_model_rocs <- function(results, comparison = FALSE, multi_panel = FALSE,
   old_par <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(old_par), add = TRUE)
   
-  if (comparison) {
-    # Get all ROC objects
-    all_rocs <- attr(best_roc, "roc_list")
-    if (is.null(all_rocs)) {
-      warning("No multiple ROC objects found. Plotting only best model.")
-      comparison <- FALSE
-    } else {
-      # Define colors and legend text for each model
-      model_names <- names(all_rocs)
-      
-      # Use a better color palette with distinct colors
-      if (requireNamespace("RColorBrewer", quietly = TRUE)) {
-        # Use RColorBrewer if available
-        n_models <- length(model_names)
-        if (n_models <= 8) {
-          model_colors <- RColorBrewer::brewer.pal(max(3, n_models), "Set1")
-        } else {
-          model_colors <- RColorBrewer::brewer.pal(8, "Set1")
-          model_colors <- c(model_colors, RColorBrewer::brewer.pal(n_models - 8, "Set2"))
-        }
-      } else {
-        # Fallback to standard R colors
-        model_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33", "#A65628", "#F781BF")
-        if (length(model_names) > length(model_colors)) {
-          color_func <- grDevices::colorRampPalette(model_colors)
-          model_colors <- color_func(length(model_names))
-        }
-      }
-      
-      # Create legend text with AUC values
-      legend_text <- sapply(1:length(model_names), function(i) {
-        model_name <- model_names[i]
-        model_roc <- all_rocs[[model_name]]
-        model_auc <- round(as.numeric(pROC::auc(model_roc)), 3)
-        return(paste(model_name, "(AUC =", model_auc, ")"))
-      })
-      
-      if (multi_panel) {
-        # Set up multi-panel layout
-        n_models <- length(model_names)
-        if (n_models <= 3) {
-          graphics::par(mfrow = c(1, n_models))
-        } else if (n_models <= 6) {
-          graphics::par(mfrow = c(2, ceiling(n_models/2)))
-        } else {
-          graphics::par(mfrow = c(3, ceiling(n_models/3)))
-        }
-        
-        # Set margins for multi-panel plots
-        graphics::par(mar = c(4, 4, 3, 1) + 0.1)
-        
-        # Plot each model in its own panel
-        for (i in 1:n_models) {
-          model_name <- model_names[i]
-          model_roc <- all_rocs[[model_name]]
-          model_auc <- round(as.numeric(pROC::auc(model_roc)), 3)
-          
-          panel_title <- paste("ROC for", model_name)
-          
-          # Plot the ROC curve
-          plot(model_roc, 
-               col = model_colors[i], 
-               lwd = 2.5,
-               main = panel_title,
-               xlab = "1 - Specificity (FPR)",
-               ylab = "Sensitivity (TPR)",
-               legacy.axes = TRUE,
-               asp = 1)
-          
-          # Add grid for readability
-          graphics::grid(lty = "dotted", col = "lightgray")
-          
-          # Add AUC text
-          graphics::text(0.7, 0.2,
-                        paste("AUC =", model_auc),
-                        cex = 1.1,
-                        font = 2,
-                        col = model_colors[i])
-        }
-        
-        # Add a title to the entire plot
-        if (!is.null(plot_title)) {
-          graphics::mtext(plot_title, outer = TRUE, line = -1.5, cex = 1.2, font = 2)
-        }
-      } else {
-        # Set the title for comparison plot
-        if (is.null(plot_title)) {
-          plot_title <- "Comparison of ROC Curves"
-        }
-        
-        # Set margins for single panel plot
-        graphics::par(mar = c(5, 4, 4, 2) + 0.1)
-        
-        # Plot all ROC curves on a single panel
-        plot(all_rocs[[1]], 
-             col = model_colors[1], 
-             lwd = 2,
-             main = plot_title,
-             xlab = "1 - Specificity (False Positive Rate)",
-             ylab = "Sensitivity (True Positive Rate)",
-             legacy.axes = TRUE,  # Use standard x-axis direction
-             asp = 1)  # Force aspect ratio to be 1
-        
-        # Add other ROC curves
-        if (length(model_names) > 1) {
-          for (i in 2:length(model_names)) {
-            plot(all_rocs[[i]], 
-                 col = model_colors[i], 
-                 lwd = 2, 
-                 add = TRUE,
-                 legacy.axes = TRUE)
-          }
-        }
-        
-        # Add grid for readability
-        graphics::grid(lty = "dotted", col = "lightgray")
-        
-        # Add a legend with a semi-transparent background and border
-        graphics::legend("bottomright", 
-                        legend = legend_text, 
-                        col = model_colors[1:length(model_names)], 
-                        lwd = 2,
-                        bg = "#FFFFFFCC",  # White with alpha transparency
-                        box.col = "darkgray",
-                        box.lwd = 1,
-                        cex = 0.8)
-      }
-      
-      # Return all ROCs invisibly
-      return(invisible(all_rocs))
+  # Extract the base model name (removing any criterion suffixes)
+  # This handles cases like "full.glm.Accuracy"
+  best_model_name <- results$best_model_name
+  model_parts <- strsplit(best_model_name, "\\.")[[1]]
+  if (length(model_parts) > 1) {
+    # If the last part is the same as the criterion, remove it
+    if (tolower(model_parts[length(model_parts)]) == tolower(results$criterion)) {
+      best_model_name <- paste(model_parts[-length(model_parts)], collapse=".")
     }
   }
   
-  # If not comparison or comparison failed, plot only best model's ROC
+  # Extract list of ROC objects if available
+  all_rocs <- attr(best_roc, "roc_list")
+
+  # For multi-panel comparison
+  if (comparison && multi_panel && !is.null(all_rocs)) {
+    # Set up multi-panel layout for better visualization
+    n_models <- length(all_rocs)
+    n_cols <- min(3, n_models)  # Maximum 3 columns
+    n_rows <- ceiling(n_models / n_cols)
+    
+    # Get model names from the ROC list
+    model_names <- names(all_rocs)
+    
+    # Define color palette (replace yellow with a darker gold color)
+    model_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFD700")
+    colors_to_use <- model_colors[1:min(length(model_names), length(model_colors))]
+    
+    # Set up the layout
+    graphics::par(mfrow = c(n_rows, n_cols))
+    graphics::par(mar = c(4, 4, 3, 1) + 0.1)  # Adjust margins for panels
+    
+    # Plot each ROC curve in its own panel
+    for (i in 1:length(model_names)) {
+      # Clean up model name for display
+      display_name <- model_names[i]
+      display_parts <- strsplit(display_name, "\\.")[[1]]
+      if (length(display_parts) > 1) {
+        # If the last part is the same as the criterion, remove it
+        if (tolower(display_parts[length(display_parts)]) == tolower(results$criterion)) {
+          display_name <- paste(display_parts[-length(display_parts)], collapse=".")
+        }
+      }
+      
+      # Determine color for this model
+      model_color <- switch(display_name,
+                           "full.glm" = "#E41A1C",       # Red
+                           "backward.stepwise" = "#377EB8", # Blue
+                           "forward.stepwise" = "#4DAF4A",  # Green
+                           "lasso" = "#984EA3",           # Purple
+                           "ridge" = "#FF7F00",           # Orange
+                           "gam" = "#FFD700",             # Gold (instead of yellow)
+                           colors_to_use[i %% length(colors_to_use) + 1])
+      
+      # Plot individual ROC
+      plot(all_rocs[[i]], 
+           main = paste("ROC for", display_name),
+           col = model_color,
+           lwd = 2,
+           xlab = "1 - Specificity (FPR)",
+           ylab = "Sensitivity (TPR)",
+           legacy.axes = TRUE,
+           grid = TRUE)
+      
+      # Add AUC value in the matching color
+      auc_value <- round(as.numeric(pROC::auc(all_rocs[[i]])), 3)
+      graphics::text(0.7, 0.2,
+                     paste("AUC =", auc_value),
+                     cex = 0.9,
+                     font = 2,
+                     col = model_color)
+      
+      # Add reference line
+      graphics::abline(0, 1, lty = 2, col = "gray")
+    }
+    
+    # Return the ROC objects invisibly
+    return(invisible(all_rocs))
+  }
+  
+  # For single-panel comparison
+  if (comparison && !multi_panel && !is.null(all_rocs)) {
+    # Prepare model names and colors
+    model_names <- names(all_rocs)
+    # Use a color-blind friendly palette
+    model_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFD700")
+    colors_to_use <- model_colors[1:min(length(model_names), length(model_colors))]
+    
+    # Set up the plot
+    graphics::par(mar = c(5, 4, 4, 2) + 0.1)
+    
+    # Clean up model names for display
+    display_names <- sapply(model_names, function(name) {
+      name_parts <- strsplit(name, "\\.")[[1]]
+      if (length(name_parts) > 1) {
+        # If the last part is the same as the criterion, remove it
+        if (tolower(name_parts[length(name_parts)]) == tolower(results$criterion)) {
+          return(paste(name_parts[-length(name_parts)], collapse="."))
+        }
+      }
+      return(name)
+    })
+    
+    # Map models to consistent colors
+    model_colors_map <- list()
+    for (i in 1:length(display_names)) {
+      display_name <- display_names[i]
+      model_colors_map[[i]] <- switch(display_name,
+                           "full.glm" = "#E41A1C",       # Red
+                           "backward.stepwise" = "#377EB8", # Blue
+                           "forward.stepwise" = "#4DAF4A",  # Green
+                           "lasso" = "#984EA3",           # Purple
+                           "ridge" = "#FF7F00",           # Orange
+                           "gam" = "#FFD700",             # Gold (instead of yellow)
+                           colors_to_use[i])
+    }
+    
+    # Plot the first ROC curve
+    plot(all_rocs[[1]], 
+         main = "Comparison of ROC Curves",
+         col = model_colors_map[[1]],
+         lwd = 2.5,
+         xlab = "1 - Specificity (False Positive Rate)",
+         ylab = "Sensitivity (True Positive Rate)",
+         legacy.axes = TRUE,
+         grid = TRUE)
+    
+    # Add other ROC curves
+    if (length(model_names) > 1) {
+      for (i in 2:length(model_names)) {
+        plot(all_rocs[[i]], 
+             col = model_colors_map[[i]], 
+             lwd = 2.5,
+             add = TRUE)
+      }
+    }
+    
+    # Add the reference diagonal line
+    graphics::abline(0, 1, lty = 2, col = "gray")
+    
+    # Add legend with cleaned model names
+    graphics::legend("bottomright", 
+                    legend = display_names,
+                    col = unlist(model_colors_map),
+                    lwd = 2.5,
+                    cex = 0.8,
+                    bg = "white")
+    
+    # Return the ROC objects invisibly
+    return(invisible(all_rocs))
+  }
+  
+  # For single model plot
   if (!comparison) {
     # Set the title for single model plot
     if (is.null(plot_title)) {
-      plot_title <- paste("ROC Curve for", results$best_model_name)
+      plot_title <- paste("ROC Curve for", best_model_name)
     }
     
     # Set margins for single model plot
     graphics::par(mar = c(5, 4, 4, 2) + 0.1)
     
+    # Determine color based on model name
+    model_color <- switch(best_model_name,
+                         "full.glm" = "#E41A1C",       # Red
+                         "backward.stepwise" = "#377EB8", # Blue
+                         "forward.stepwise" = "#4DAF4A",  # Green
+                         "lasso" = "#984EA3",           # Purple
+                         "ridge" = "#FF7F00",           # Orange
+                         "gam" = "#FFD700",             # Gold (instead of yellow)
+                         "#377EB8")  # Default blue if none match
+    
     # Plot the ROC curve with improved appearance
     plot(best_roc, 
          main = plot_title,
-         col = "#377EB8",  # Use a nice blue color
+         col = model_color,  # Use matched color
          lwd = 2.5,        # Thicker line for visibility
          xlab = "1 - Specificity (False Positive Rate)",
          ylab = "Sensitivity (True Positive Rate)",
@@ -230,7 +259,7 @@ plot_model_rocs <- function(results, comparison = FALSE, multi_panel = FALSE,
                   paste("AUC =", auc_value),
                   cex = 1.1,
                   font = 2,
-                  col = "#377EB8")
+                  col = model_color)
     
     # Return the best ROC invisibly
     return(invisible(best_roc))

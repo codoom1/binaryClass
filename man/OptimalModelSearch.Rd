@@ -98,51 +98,78 @@ Christopher Odoom, Denis Folitse, Owen Gallagher & Paul Shannon <codoom@umass.ed
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
+\section{Warning}{
+  The Sonar dataset example can produce numerous convergence warnings due to its high dimensionality 
+  and near-perfect separation characteristics. Use \code{suppress_warnings=TRUE} to hide these warnings. 
+  
+  Models like GLM may not converge for datasets with near-perfect separation. These warnings don't 
+  necessarily indicate a problem with the function itself.
+}
+
 \examples{
 
 ##==Example 1: Accuracy criterion====##
 \donttest{
-data(PimaIndiansDiabetes, package="mlbench")
+# Using PimaIndiansDiabetes data
+library(mlbench)
+data(PimaIndiansDiabetes)
 data.t <- PimaIndiansDiabetes
 data.t$diabetes <- ifelse(data.t$diabetes=="neg", 0, 1)
+set.seed(123)
 result <- OptimalModelSearch(formula=diabetes~., data=data.t,
                             criterion="Accuracy", training_percent=0.8, 
                             threshold=0.54, suppress_warnings=TRUE)
-result$best_model_name  # View best model
+# Display results
+cat("Best model:", result$best_model_name, "with accuracy:", 
+    round(result$performance_metric, 4), "\n")
 }
 
 ##==Example 2: AUC criterion====##
 \donttest{
-data(Sonar, package="mlbench")
+# Using Sonar data - suppress_warnings prevents excessive output
+library(mlbench)
+data(Sonar)
 dat <- Sonar
 dat$Class <- ifelse(dat$Class=="R", 0, 1)
+set.seed(123)
 result <- OptimalModelSearch(formula=Class~., data=dat,
                            criterion="AUC", training_percent=0.8,
                            suppress_warnings=TRUE)
-result$best_model_name  # View best model
+# Display results
+cat("Best model:", result$best_model_name, "with AUC:", 
+    round(result$performance_metric, 4), "\n")
 }
 
 ##==Example 3: AIC criterion====##
 \donttest{
-data(PimaIndiansDiabetes, package="mlbench")
+# Using PimaIndiansDiabetes data
+library(mlbench)
+data(PimaIndiansDiabetes)
 data.t <- PimaIndiansDiabetes
 data.t$diabetes <- ifelse(data.t$diabetes=="neg", 0, 1)
+set.seed(123)
 result <- OptimalModelSearch(formula=diabetes~., data=data.t,
                             criterion="AIC", training_percent=0.8,
                             suppress_warnings=TRUE)
-result$best_model_name  # View best model
+# Display results
+cat("Best model:", result$best_model_name, "with AIC:", 
+    round(result$performance_metric, 2), "\n")
 }
 
-##==Example 4: ROC Visualization with Multi-Panel Plot====##
+##==Example 4: ROC Visualization====##
 \donttest{
-data(Sonar, package="mlbench")
+# Visualizing ROC curves with multi-panel display
+library(mlbench)
+data(Sonar)
 dat <- Sonar
 dat$Class <- ifelse(dat$Class=="R", 0, 1)
-# Plot all ROC curves in separate panels - clearer visualization
+set.seed(123)
+# Note: This example focuses on visualization
 result <- OptimalModelSearch(formula=Class~., data=dat,
                           criterion="AUC", training_percent=0.8,
                           suppress_warnings=TRUE, plot_roc=TRUE, 
                           plot_comparison=TRUE, multi_panel=TRUE)
+invisible(NULL) # Suppress return value in examples
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

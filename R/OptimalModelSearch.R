@@ -1,9 +1,10 @@
 #' Internal helper function to draw a confusion matrix visualization
 #'
 #' @param cm A confusion matrix object (typically from `caret::confusionMatrix`).
+#' @param model_name Optional model name to include in the title.
 #' @keywords internal
 #' @export
-.draw_confusion_matrix <- function(cm) {
+.draw_confusion_matrix <- function(cm, model_name = NULL) {
   # Setup layout for the plot
   current_par <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(current_par), add = TRUE)
@@ -11,7 +12,13 @@
   graphics::layout(matrix(c(1,1,2)))
   graphics::par(mar=c(2,2,2,2))
   graphics::plot(c(100, 345), c(300, 450), type = "n", xlab="", ylab="", xaxt='n', yaxt='n')
-  graphics::title('CONFUSION MATRIX', cex.main=2)
+  
+  # Set the title, including model name if provided
+  if (!is.null(model_name)) {
+    graphics::title(paste('CONFUSION MATRIX -', model_name), cex.main=1.5)
+  } else {
+    graphics::title('CONFUSION MATRIX', cex.main=2)
+  }
 
   # create the matrix
   graphics::rect(150, 430, 240, 370, col='#3F97D0')
@@ -479,6 +486,15 @@ if(criterion == "AUC") {
   # Get the true labels
   truth.test <- as.factor(test.data[[response_variable]])
   
+  # Store threshold in results
+  results$threshold <- threshold
+  
+  # Store original formula as attribute
+  attr(results, "formula") <- deparse(formula)
+  
+  # Store representative sample of data for potential recreating of confusion matrix
+  attr(results, "data") <- test.data
+  
   # Prepare confusion matrices for each model
   
   # 1. Full GLM
@@ -537,7 +553,7 @@ if(criterion == "AUC") {
   best_metric <- max(accuracies)
   
   # Store results
-  results$best_model_name <- best_model
+  results$best_model_name <- paste0(best_model, ".Accuracy")  # Add suffix for clarity
   results$performance_metric <- best_metric
   
   # Store the best model object, coefficients, and confusion matrix
@@ -565,6 +581,66 @@ if(criterion == "AUC") {
     results$best_model_object <- cv.ridge
     results$coefficients <- ridge.coef
     results$details <- CM_ridge
+  }
+  
+  # Check that details contains the confusion matrix - add it if missing
+  if (!is.list(results$details) || 
+      !all(c("table", "byClass", "overall") %in% names(results$details))) {
+    cat("Warning: Confusion matrix was not properly stored in results$details.\n")
+    cat("Manually adding confusion matrix for the best model.\n")
+    
+    # Get the appropriate confusion matrix based on the best model
+    if (best_model == "full.glm") {
+      results$details <- CM_full.glm
+      # Make sure model object is stored - sometimes it's missing due to environment issues
+      if (!"best_model_object" %in% names(results)) {
+        results$best_model_object <- full.glm
+      }
+    } else if (best_model == "backward.stepwise") {
+      results$details <- CM_backward.stepwise
+      if (!"best_model_object" %in% names(results)) {
+        results$best_model_object <- backward.stepwise
+      }
+    } else if (best_model == "forward.stepwise") {
+      results$details <- CM_forward.stepwise
+      if (!"best_model_object" %in% names(results)) {
+        results$best_model_object <- forward.stepwise
+      }
+    } else if (best_model == "gam") {
+      results$details <- CM_gam
+      if (!"best_model_object" %in% names(results)) {
+        results$best_model_object <- gam.model
+      }
+    } else if (best_model == "lasso") {
+      results$details <- CM_lasso
+      if (!"best_model_object" %in% names(results)) {
+        results$best_model_object <- cv.lasso
+      }
+    } else if (best_model == "ridge") {
+      results$details <- CM_ridge
+      if (!"best_model_object" %in% names(results)) {
+        results$best_model_object <- cv.ridge
+      }
+    }
+  }
+  
+  # Double-check that all required objects are in the results
+  if (!"best_model_object" %in% names(results)) {
+    warning("best_model_object is missing from results. This may cause issues with visualization functions.")
+    # As a last resort, try to get the model from the parent environment
+    if (best_model == "full.glm" && exists("full.glm")) {
+      results$best_model_object <- full.glm
+    } else if (best_model == "backward.stepwise" && exists("backward.stepwise")) {
+      results$best_model_object <- backward.stepwise
+    } else if (best_model == "forward.stepwise" && exists("forward.stepwise")) {
+      results$best_model_object <- forward.stepwise
+    } else if (best_model == "gam" && exists("gam.model")) {
+      results$best_model_object <- gam.model
+    } else if (best_model == "lasso" && exists("cv.lasso")) {
+      results$best_model_object <- cv.lasso
+    } else if (best_model == "ridge" && exists("cv.ridge")) {
+      results$best_model_object <- cv.ridge
+    }
   }
   
 } else if(criterion == "AIC") {
@@ -687,7 +763,7 @@ if(criterion == "AUC") {
   stop("Invalid criterion specified. Must be 'AUC', 'Accuracy', or 'AIC'.")
 }
 
-# If plot_roc is TRUE and criterion is "AUC", plot the ROC curves
+# If plot_roc is TRUE and criterion is "AUC", plot the ROC curve
 if (plot_roc && criterion == "AUC") {
   if (requireNamespace("binaryClass", quietly = TRUE)) {
     # Use the plot_model_rocs function if available
@@ -717,14 +793,32 @@ if (plot_roc && criterion == "AUC") {
         graphics::legend("bottomright", legend=model_names, col=colors_to_use, lwd=2)
       } else {
         warning("No multiple ROC objects found for comparison.")
-        plot(results$details, main=paste("ROC Curve for", results$best_model_name))
+        # Extract the base model name (removing any criterion suffixes)
+        best_model_name <- results$best_model_name
+        model_parts <- strsplit(best_model_name, "\\.")[[1]]
+        if (length(model_parts) > 1) {
+          # If the last part is the same as the criterion, remove it
+          if (tolower(model_parts[length(model_parts)]) == tolower(results$criterion)) {
+            best_model_name <- paste(model_parts[-length(model_parts)], collapse=".")
+          }
+        }
+        plot(results$details, main=paste("ROC Curve for", best_model_name))
         graphics::text(0.7, 0.2, 
              paste("AUC =", round(as.numeric(results$performance_metric), 3)),
              cex=0.9)
       }
     } else {
       # Plot only the best model
-      plot(results$details, main=paste("ROC Curve for", results$best_model_name))
+      # Extract the base model name (removing any criterion suffixes)
+      best_model_name <- results$best_model_name
+      model_parts <- strsplit(best_model_name, "\\.")[[1]]
+      if (length(model_parts) > 1) {
+        # If the last part is the same as the criterion, remove it
+        if (tolower(model_parts[length(model_parts)]) == tolower(results$criterion)) {
+          best_model_name <- paste(model_parts[-length(model_parts)], collapse=".")
+        }
+      }
+      plot(results$details, main=paste("ROC Curve for", best_model_name))
       graphics::text(0.7, 0.2, 
            paste("AUC =", round(as.numeric(results$performance_metric), 3)),
            cex=0.9)
@@ -738,14 +832,42 @@ if (plot_cm && criterion == "Accuracy") {
   tryCatch({
     # Print some debug information
     cat("Plotting confusion matrix...\n")
-    cat("Dimensions of details object:", dim(results$details$table), "\n")
     
-    # Force plotting in RStudio using print
-    print(.draw_confusion_matrix(results$details))
-    cat("Confusion matrix plot completed.\n")
+    # Make sure details is properly set in the results
+    if (!is.list(results$details) || !all(c("table", "byClass", "overall") %in% names(results$details))) {
+      # This is a fallback in case details wasn't properly set
+      cat("Confusion matrix not found in results$details, recreating it...\n")
+      
+      # Recreate the confusion matrix based on the best model
+      if (best_model == "full.glm") {
+        results$details <- CM_full.glm
+      } else if (best_model == "backward.stepwise") {
+        results$details <- CM_backward.stepwise
+      } else if (best_model == "forward.stepwise") {
+        results$details <- CM_forward.stepwise
+      } else if (best_model == "gam") {
+        results$details <- CM_gam
+      } else if (best_model == "lasso") {
+        results$details <- CM_lasso
+      } else if (best_model == "ridge") {
+        results$details <- CM_ridge
+      }
+    }
+    
+    # Now check again to make sure details was set
+    if (is.list(results$details) && all(c("table", "byClass", "overall") %in% names(results$details))) {
+      cat("Dimensions of details object:", dim(results$details$table), "\n")
+      # Force plotting in RStudio using print
+      print(.draw_confusion_matrix(results$details, results$best_model_name))
+      cat("Confusion matrix plot completed.\n")
+    } else {
+      warning("Could not plot confusion matrix: details object is not a valid confusion matrix")
+    }
   }, error = function(e) {
     # Fallback to basic caret confusion matrix printing
-    print(results$details)
+    if (is.list(results$details) && ("table" %in% names(results$details))) {
+      print(results$details)
+    }
     warning("Could not plot confusion matrix: ", e$message)
   })
 }

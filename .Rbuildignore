@@ -13,4 +13,5 @@
 ^.*\.Rproj$
 ^Rplots\.pdf$
 ^LICENSE\.md$
-^CRAN-SUBMISSION$ 
+^CRAN-SUBMISSION$
+^dev$ 

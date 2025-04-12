@@ -1,3 +1,14 @@
 OptimalModelSearch      A Binary Classification Model Selection
+binaryClass             Binary Classification Model Selection and
+                        Evaluation
+compare_model_rocs      Compare ROC Curves for Different Binary
+                        Classification Models
+extract_best_model      Extract the best model from the results of
+                        OptimalModelSearch
 plot_descrip            Generate Descriptive Plots for Variables in a
                         Data Frame
+plot_model_cm           Plot Confusion Matrix from OptimalModelSearch
+                        Results
+plot_model_rocs         Plot ROC Curves from OptimalModelSearch Results
+predict_model           Make predictions from a model extracted by
+                        extract_best_model

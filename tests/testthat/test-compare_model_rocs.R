@@ -14,11 +14,18 @@ test_that("compare_model_rocs functions correctly", {
   
   # Check structure of results
   expect_type(result, "list")
-  expect_true("stepwise_roc" %in% names(result))
-  expect_true("lasso_roc" %in% names(result))
-  expect_true("ridge_roc" %in% names(result))
+  expect_true("roc_list" %in% names(result))
   expect_true("auc_values" %in% names(result))
   expect_true("best_model" %in% names(result))
+  
+  # Check that roc_list is a list containing ROC objects
+  expect_type(result$roc_list, "list")
+  expect_gt(length(result$roc_list), 0)
+  
+  # Check for expected models in the results
+  model_names <- names(result$roc_list)
+  expected_models <- c("full.glm", "backward.stepwise", "forward.stepwise", "lasso", "ridge")
+  expect_true(any(expected_models %in% model_names))
   
   # Check AUC values are numeric and between 0 and 1
   expect_true(all(result$auc_values >= 0 & result$auc_values <= 1))
@@ -37,11 +44,10 @@ test_that("compare_model_rocs functions correctly", {
   expect_true(file.exists(temp_file))
   file.remove(temp_file)
   
-  # Test custom plot title
-  custom_title <- "Custom ROC Curve Title"
-  result_custom <- compare_model_rocs(Species ~ ., data = binary_data, 
-                                     plot_title = custom_title)
-  expect_type(result_custom, "list")
+  # Test suppress_warnings parameter
+  result_suppress <- compare_model_rocs(Species ~ ., data = binary_data, 
+                                       suppress_warnings = TRUE)
+  expect_type(result_suppress, "list")
   
   # Test error handling
   expect_error(compare_model_rocs(NonExistentVar ~ ., data = binary_data))

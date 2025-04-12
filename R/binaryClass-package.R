@@ -19,10 +19,7 @@
 #'         classification datasets
 #' }
 #'
-#' @docType package
-#' @name binaryClass
-#' @aliases binaryClass-package
-#' @keywords package classification modeling
+#' @keywords classification modeling
 #' @concept binary classification
 #' @concept model selection
 #' @concept ROC curve
@@ -30,4 +27,6 @@
 #' @concept predictive modeling
 #' @concept statistical learning
 #' @importFrom stats terms predict na.omit model.matrix step
-NULL 
+#' @name binaryClass-package
+#' @aliases binaryClass
+"_PACKAGE" 

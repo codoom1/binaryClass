@@ -17,18 +17,21 @@
 \item[Type]\AsIs{Package}
 \item[Title]\AsIs{Binary Classification Package}
 \item[Version]\AsIs{1.0.0}
-\item[Author]\AsIs{Christopher Odoom, Denis Folitse, Owen Gallagher &Paul Shannon}
-\item[Maintainer]\AsIs{Christopher Odoom & Denis Folitse }\email{codoom@umass.edu}\AsIs{}\email{dfolitse@umass.edu}\AsIs{}
+\item[Author]\AsIs{Christopher Odoom [aut, cre], Denis Folitse [aut], Owen Gallagher [aut], Paul Shannon [aut]}
+\item[Maintainer]\AsIs{Christopher Odoom }\email{codoom@umass.edu}\AsIs{}
 \item[Description]\AsIs{
 The binaryClass package provides functions and tools for binary classification tasks. 
 It includes functions for model training, evaluation, and prediction. 
 Use the package to streamline the development and analysis of binary classification models.
-Example datasets and utility functions are also included.This package also provide a function
+Example datasets and utility functions are also included. This package also provides a function
 for descriptive analysis. It does so by making plots based on user specifications.}
-\item[License]\AsIs{MIT}
+\item[License]\AsIs{MIT + file LICENSE}
+\item[URL]\AsIs{}\url{https://github.com/codoom1/binaryClass}\AsIs{,
+}\url{https://codoom1.github.io/binaryClass/}\AsIs{}
+\item[BugReports]\AsIs{}\url{https://github.com/codoom1/binaryClass/issues}\AsIs{}
 \item[Encoding]\AsIs{UTF-8}
-\item[Imports]\AsIs{glmnet, pROC, caret, stats, graphics, utils}
-\item[Suggests]\AsIs{testthat, knitr, rmarkdown, mlbench}
+\item[Imports]\AsIs{glmnet, pROC, caret, mgcv, stats, graphics, utils}
+\item[Suggests]\AsIs{testthat, knitr, rmarkdown, mlbench, RColorBrewer}
 \item[NeedsCompilation]\AsIs{no}
 \item[RoxygenNote]\AsIs{7.3.2}
 \end{description}
@@ -42,13 +45,15 @@ Internal helper function to draw a confusion matrix visualization
 %
 \begin{Usage}
 \begin{verbatim}
-.draw_confusion_matrix(cm)
+.draw_confusion_matrix(cm, model_name = NULL)
 \end{verbatim}
 \end{Usage}
 %
 \begin{Arguments}
 \begin{ldescription}
 \item[\code{cm}] A confusion matrix object (typically from `caret::confusionMatrix`).
+
+\item[\code{model\_name}] Optional model name to include in the title.
 \end{ldescription}
 \end{Arguments}
 \HeaderA{.plot\_barplot\_ind}{Internal helper function for plotting barplots}{.plot.Rul.barplot.Rul.ind}
@@ -75,16 +80,290 @@ Internal helper function for plotting barplots
 \item[\code{max\_levels}] The maximum number of unique levels before percentages are omitted (default 13).
 \end{ldescription}
 \end{Arguments}
+\HeaderA{binaryClass}{Binary Classification Model Selection and Evaluation}{binaryClass}
+\aliasA{binaryClass-package}{binaryClass}{binaryClass.Rdash.package}
+\keyword{AUC}{binaryClass}
+\keyword{ROC curve}{binaryClass}
+\keyword{binary classification}{binaryClass}
+\keyword{model selection}{binaryClass}
+\keyword{predictive modeling}{binaryClass}
+\keyword{statistical learning}{binaryClass}
+\keyword{classification}{binaryClass}
+\keyword{modeling}{binaryClass}
+\keyword{package}{binaryClass}
+%
+\begin{Description}
+The binaryClass package provides a comprehensive toolkit for binary 
+classification tasks in R. It implements powerful functions for model 
+training, evaluation, and prediction, with a focus on comparing different 
+classification approaches.
+\end{Description}
+%
+\begin{Section}{Key Functions}
+
+\begin{itemize}
+
+\item{} \code{\LinkA{OptimalModelSearch}{OptimalModelSearch}}: Automatically compares multiple binary 
+classification models and selects the best model based on AUC, 
+Accuracy, or AIC
+\item{} \code{\LinkA{extract\_best\_model}{extract.Rul.best.Rul.model}}: Extracts the best model from 
+OptimalModelSearch results for further use
+\item{} \code{\LinkA{compare\_model\_rocs}{compare.Rul.model.Rul.rocs}}: Compare ROC curves for different models
+\item{} \code{\LinkA{plot\_model\_rocs}{plot.Rul.model.Rul.rocs}}: Plot ROC curves from model results
+\item{} \code{\LinkA{plot\_model\_cm}{plot.Rul.model.Rul.cm}}: Plot confusion matrix from model results
+\item{} \code{\LinkA{plot\_descrip}{plot.Rul.descrip}}: Create descriptive visualizations for binary
+classification datasets
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{SeeAlso}
+Useful links:
+\begin{itemize}
+
+\item{} \url{https://github.com/codoom1/binaryClass}
+\item{} \url{https://codoom1.github.io/binaryClass/}
+\item{} Report bugs at \url{https://github.com/codoom1/binaryClass/issues}
+
+\end{itemize}
+
+
+\end{SeeAlso}
+\HeaderA{compare\_model\_rocs}{Compare ROC Curves for Different Binary Classification Models}{compare.Rul.model.Rul.rocs}
+\aliasA{compare\_rocs}{compare\_model\_rocs}{compare.Rul.rocs}
+\aliasA{plot\_roc\_curves}{compare\_model\_rocs}{plot.Rul.roc.Rul.curves}
+\aliasA{roc\_comparison}{compare\_model\_rocs}{roc.Rul.comparison}
+\aliasA{roc\_curves}{compare\_model\_rocs}{roc.Rul.curves}
+\keyword{AUC comparison}{compare\_model\_rocs}
+\keyword{ROC curve}{compare\_model\_rocs}
+\keyword{binary classification}{compare\_model\_rocs}
+\keyword{model comparison}{compare\_model\_rocs}
+\keyword{model evaluation}{compare\_model\_rocs}
+\keyword{performance comparison}{compare\_model\_rocs}
+\keyword{regularization}{compare\_model\_rocs}
+\keyword{visualization}{compare\_model\_rocs}
+\keyword{hplot}{compare\_model\_rocs}
+\keyword{models}{compare\_model\_rocs}
+%
+\begin{Description}
+This function fits multiple binary classification models (full logistic regression, backward stepwise,
+forward stepwise, GAM, lasso, and ridge) to the same dataset and plots their ROC curves 
+in a multi-panel layout for easy comparison. Each model gets its own panel with a dedicated ROC curve.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+compare_model_rocs(
+  formula,
+  data,
+  training_percent = 0.8,
+  save_plot = FALSE,
+  pdf_filename = "roc_curves_comparison.pdf",
+  suppress_warnings = FALSE
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class \bsl{}"formula\bsl{}": a symbolic description of the
+model to be fitted (e.g., `response \textasciitilde{} predictor1 + predictor2` or `response \textasciitilde{} .`).
+
+\item[\code{data}] A data frame containing the variables in the model.
+
+\item[\code{training\_percent}] A numeric value between 0 and 1 indicating the proportion
+of the data to use for training. Default is `0.8`.
+
+\item[\code{save\_plot}] Logical value indicating whether to save the plot to a PDF file.
+Default is FALSE.
+
+\item[\code{pdf\_filename}] A character string specifying the name of the PDF file if
+save\_plot is TRUE. Default is "roc\_curves\_comparison.pdf".
+
+\item[\code{suppress\_warnings}] Logical indicating whether to suppress warnings. Default is FALSE.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A list containing the ROC objects for each model and their AUC values:
+\begin{itemize}
+
+\item{} `roc\_list`: A list of ROC objects for each model.
+\item{} `auc\_values`: A named numeric vector of AUC values for each model.
+\item{} `best\_model`: The name of the model with the highest AUC.
+
+\end{itemize}
+
+\end{Value}
+%
+\begin{Section}{Models Compared}
+
+This function compares the following models:
+\begin{itemize}
+
+\item{} Full Logistic Regression: Uses all predictors in the formula
+\item{} Backward Stepwise: Performs backward selection from the full model
+\item{} Forward Stepwise: Starts with intercept-only model and adds predictors
+\item{} GAM (Generalized Additive Model): Fits smooth terms for numeric predictors
+\item{} Lasso Regression: L1 regularization that can shrink coefficients to zero
+\item{} Ridge Regression: L2 regularization that shrinks coefficients
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{Section}{Relationship with OptimalModelSearch}
+
+This function provides all the same models as OptimalModelSearch but is focused on visualization 
+rather than model selection. The multiple panel layout makes it easy to compare ROC curves visually.
+\begin{itemize}
+
+\item{} Use \code{compare\_model\_rocs()} to get a dedicated multi-panel ROC plot
+\item{} Use \code{OptimalModelSearch(criterion="AUC", plot\_roc=TRUE, plot\_comparison=TRUE, multi\_panel=TRUE)} for integrated model selection and visualization
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{SeeAlso}
+\code{\LinkA{OptimalModelSearch}{OptimalModelSearch}} for comprehensive model selection,
+\code{\LinkA{plot\_model\_rocs}{plot.Rul.model.Rul.rocs}} for plotting ROC curves from OptimalModelSearch results
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# Load example data
+library(mlbench)
+data(Sonar)
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
+
+# Generate multi-panel ROC plot comparing all models
+result <- compare_model_rocs(Class ~ ., data = dat)
+
+# See the AUC values
+result$auc_values
+
+# Check which model performed best
+result$best_model
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{extract\_best\_model}{Extract the best model from the results of OptimalModelSearch}{extract.Rul.best.Rul.model}
+\aliasA{get\_best\_model}{extract\_best\_model}{get.Rul.best.Rul.model}
+\aliasA{model\_extraction}{extract\_best\_model}{model.Rul.extraction}
+\keyword{binary classification}{extract\_best\_model}
+\keyword{model extraction}{extract\_best\_model}
+\keyword{model refitting}{extract\_best\_model}
+\keyword{model selection}{extract\_best\_model}
+\keyword{optimal model}{extract\_best\_model}
+\keyword{prediction}{extract\_best\_model}
+\keyword{models}{extract\_best\_model}
+\keyword{regression}{extract\_best\_model}
+%
+\begin{Description}
+This function extracts the best model from the results of OptimalModelSearch
+and returns the actual fitted model object.
+
+This function takes the results from OptimalModelSearch and returns the actual
+best model object that can be used for further analysis, prediction, or examination.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+extract_best_model(results, data, refit = TRUE)
+
+extract_best_model(results, data, refit = TRUE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{results}] A list returned by OptimalModelSearch function
+
+\item[\code{data}] The original data frame used for model fitting
+
+\item[\code{refit}] Logical indicating whether to refit the model on the full dataset (TRUE)
+or return the model fitted on the training set (FALSE). Default is TRUE.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+The returned model can be used for prediction with \code{predict()}, examination
+of coefficients, or any other analysis typically performed on the respective model class.
+
+When \code{refit=TRUE} (the default), the function refits the model on the complete dataset
+for improved prediction performance.
+
+Note: For glmnet models (lasso and ridge), use the \code{\LinkA{predict\_model}{predict.Rul.model}} function 
+instead of \code{predict()} directly to handle the data format conversions automatically.
+\end{Details}
+%
+\begin{Value}
+The best model object from the results.
+
+A model object of the appropriate class:
+\begin{itemize}
+
+\item{} For full.glm: A glm object
+\item{} For backward.stepwise or forward.stepwise: A glm object
+\item{} For gam: A gam object from the mgcv package
+\item{} For lasso or ridge: A cv.glmnet object from the glmnet package
+
+\end{itemize}
+
+\end{Value}
+%
+\begin{SeeAlso}
+\code{\LinkA{OptimalModelSearch}{OptimalModelSearch}} for generating the results object
+\code{\LinkA{predict\_model}{predict.Rul.model}} for making predictions with extracted models
+\end{SeeAlso}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# Find the best model
+library(mlbench)
+data(Sonar)
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
+
+# Run OptimalModelSearch
+result <- OptimalModelSearch(formula=Class~., data=dat,
+                           criterion="AUC", suppress_warnings=TRUE)
+                           
+# Extract the best model
+best_model <- extract_best_model(result, dat)
+
+# Use the predict_model function for prediction (works for all model types)
+predictions <- predict_model(best_model, newdata=dat[1:5,], 
+                            formula=Class~., type="response")
+print(predictions)
+
+# Examine model coefficients (if applicable to the model type)
+if(inherits(best_model, "glm") || inherits(best_model, "gam")) {
+  print(summary(best_model))
+}
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
 \HeaderA{OptimalModelSearch}{A Binary Classification Model Selection}{OptimalModelSearch}
 %
 \begin{Description}
-This function  does binary classification model selection. It compares model based on user specified criterions including AUC, Accuracy and AIC.This function provides a simplified method for fitting some selected binary classification model simultaneously. It then returns the best model based on a predetermined set of control parameters. These parameters include evaluation criteria, formula, data, training percentage and threshold for accuracy calculations.
+This function does binary classification model selection. It compares multiple models (full logistic regression, backward stepwise, forward stepwise, GAM, lasso, and ridge) based on user specified criterions including AUC, Accuracy and AIC. This function provides a simplified method for fitting these binary classification models simultaneously. It then returns the best model based on a predetermined set of control parameters. These parameters include evaluation criteria, formula, data, training percentage and threshold for accuracy calculations.
 \end{Description}
 %
 \begin{Usage}
 \begin{verbatim}
 OptimalModelSearch(formula, data, criterion = c("AUC", "Accuracy", "AIC"),
-                   training_percent = 0.8, threshold = 0.5)
+                   training_percent = 0.8, threshold = 0.5, 
+                   suppress_warnings = FALSE, plot_roc = FALSE, 
+                   plot_comparison = FALSE, multi_panel = FALSE, 
+                   plot_cm = FALSE)
 
 \end{verbatim}
 \end{Usage}
@@ -105,68 +384,134 @@ observations as positive or negative. It applicable when method is Accuracy.
 Threshold tells the function how to distinguish between the two classes.
 The default is 0.5 
 
+\item[\code{suppress\_warnings}]  Logical indicating whether to suppress warning messages (such as convergence warnings). Default is FALSE. Set to TRUE to hide excessive warnings when using datasets with near-perfect separation. 
+
+\item[\code{plot\_roc}]  Logical indicating whether to automatically plot ROC curves when criterion is "AUC". Default is FALSE. When TRUE, it will display the ROC curve of the best model. 
+
+\item[\code{plot\_comparison}]  Logical indicating whether to plot comparison of all models' ROC curves when plot\_roc is TRUE. Default is FALSE. When TRUE, it will display ROC curves for all models on a single plot. 
+
+\item[\code{multi\_panel}]  Logical indicating whether to display each model in its own panel when plot\_comparison is TRUE. Default is FALSE. When TRUE, it will display each model's ROC curve in a separate panel arranged in a grid layout. 
+
+\item[\code{plot\_cm}]  Logical indicating whether to automatically plot the confusion matrix when criterion is "Accuracy". Default is FALSE. When TRUE, it will display a visual representation of the confusion matrix for the best model. 
+
 \end{ldescription}
 \end{Arguments}
 %
 \begin{Details}
 The "formula" input specifies how the predictors are included in the model. It functions similarly to the formula objects used in glm, lm, and other modeling functions. This design choice is intended to allow users to easily fit all specified models.
 
-
 The "Data" input refers to the dataset used for modeling, which can be either a matrix or a dataframe. It's crucial to ensure that all variables specified in the formula are present in the data.
 
 The "Criterion" input allows users to search for a model based on their preferred performance measure. Currently, our function supports three criteria including AUC (which is the most popular in this class), Accuracy, and AIC.
 
-In addition, the "training\_percent" input allows users to assess models based on the proportion of training data. This flexibility enhances the model specification process and introduces more dynamics into model building, especially in the case of binary classification. And lastly, the threshold option is applicable when the criterion is Accuracy, it tells the function how to distinguish between the two classes in the case where a confusion matrix had to be generated  to calculate the accuracy and other measures such as sensitivity and specificity. The default is 0.5 and users can use this flexibility to train their model based on their knowledge of the problem.
+In addition, the "training\_percent" input allows users to assess models based on the proportion of training data. This flexibility enhances the model specification process and introduces more dynamics into model building, especially in the case of binary classification. And lastly, the threshold option is applicable when the criterion is Accuracy, it tells the function how to distinguish between the two classes in the case where a confusion matrix had to be generated to calculate the accuracy and other measures such as sensitivity and specificity. The default is 0.5 and users can use this flexibility to train their model based on their knowledge of the problem.
+
+The function compares the following models:
+\begin{itemize}
+
+\item{} Full Logistic Regression: Uses all predictors in the formula
+\item{} Backward Stepwise: Performs backward selection from the full model
+\item{} Forward Stepwise: Starts with intercept-only model and adds predictors
+\item{} GAM (Generalized Additive Model): Fits smooth terms for numeric predictors
+\item{} Lasso Regression: L1 regularization that can shrink coefficients to zero
+\item{} Ridge Regression: L2 regularization that shrinks coefficients
+
+\end{itemize}
+
+
+The function provides automatic visualization based on the chosen criterion:
+\begin{itemize}
+
+\item{} When criterion="AUC": Use plot\_roc=TRUE to display the ROC curve of the best model,
+or with plot\_comparison=TRUE to compare all models' ROC curves.
+Use multi\_panel=TRUE for clearer visualization with separate panels for each model.
+\item{} When criterion="Accuracy": Use plot\_cm=TRUE to display the confusion matrix
+of the best model, showing true/false positives/negatives and other metrics.
+\item{} When criterion="AIC": No visualization is provided as AIC is a numerical measure.
+
+\end{itemize}
 
 
 \end{Details}
 %
 \begin{Value}
 \begin{ldescription}
-\item[\code{Status}] A statement telling the user which model was selected
-\item[\code{Best Model Output}] The model summary of the best Model
-\item[\code{ROC plot}] An ROC curve is returned with the AUC printed on it.
-\item[\code{Confusion Matrix}] A visual of a confusion matrix together with performance measure
+\item[\code{criterion}] The criterion used for model selection.
+\item[\code{best\_model\_name}] Name of the best performing model.
+\item[\code{performance\_metric}] The value of the specified criterion for the best model.
+\item[\code{details}] Additional model details:
+\begin{itemize}
+
+\item{} When criterion is "AUC": Contains the ROC object from pROC package, which can be plotted using plot(result\$details).
+\item{} When criterion is "Accuracy": Contains the confusionMatrix object.
+\item{} When criterion is "AIC": Contains AIC values.
+
+\end{itemize}
+
+
 \end{ldescription}
 \end{Value}
 %
 \begin{Author}
-Christopher Odoom ,Denis Folitse, Owen Gallagher \& Paul Shannon <codoom@umass.edu>
+Christopher Odoom, Denis Folitse, Owen Gallagher \& Paul Shannon <codoom@umass.edu>
 \end{Author}
 %
 \begin{Examples}
 \begin{ExampleCode}
 
-##==Example 1====##
-## Using the Accuracy criterion
-## Loading the PIMA Diabetes data
-require(mlbench)
-data(PimaIndiansDiabetes)
+##==Example 1: Accuracy criterion====##
+
+data(PimaIndiansDiabetes, package="mlbench")
 data.t <- PimaIndiansDiabetes
-data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
-OptimalModelSearch(formula=diabetes~., data=data.t,
-criterion="Accuracy", training_percent=0.8, threshold=0.54)
+data.t$diabetes <- ifelse(data.t$diabetes=="neg", 0, 1)
+result <- OptimalModelSearch(formula=diabetes~., data=data.t,
+                            criterion="Accuracy", training_percent=0.8, 
+                            threshold=0.54, suppress_warnings=TRUE)
+# Display simplified results
+result$criterion
+result$best_model_name
+result$performance_metric
 
 
-##==Example 2====##
-## Using the AUC criterion
-library(mlbench)
-data(Sonar)
-dat<- Sonar
-dat$Class <- ifelse(dat$Class=="R",0,1)
-OptimalModelSearch(formula=Class~., data=dat,
-criterion="AUC", training_percent=0.8)
+##==Example 2: AUC criterion====##
+
+data(Sonar, package="mlbench")
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
+result <- OptimalModelSearch(formula=Class~., data=dat,
+                           criterion="AUC", training_percent=0.8,
+                           suppress_warnings=TRUE)
+# Display simplified results
+result$criterion
+result$best_model_name
+result$performance_metric
 
 
-##==Example 3====##
-## Using AIC criterion
-## Loading the PIMA Diabetes data
-require(mlbench)
-data(PimaIndiansDiabetes)
+##==Example 3: AIC criterion====##
+
+data(PimaIndiansDiabetes, package="mlbench")
 data.t <- PimaIndiansDiabetes
-data.t$diabetes <-ifelse(data.t$diabetes=="neg",0,1)
-OptimalModelSearch(formula=diabetes~., data=data.t,
-criterion="AIC", training_percent=0.8)
+data.t$diabetes <- ifelse(data.t$diabetes=="neg", 0, 1)
+result <- OptimalModelSearch(formula=diabetes~., data=data.t,
+                            criterion="AIC", training_percent=0.8,
+                            suppress_warnings=TRUE)
+# Display simplified results
+result$criterion
+result$best_model_name
+result$performance_metric
+
+
+##==Example 4: ROC Visualization with Multi-Panel Plot====##
+
+data(Sonar, package="mlbench")
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
+# Plot all ROC curves in separate panels - clearer visualization
+result <- OptimalModelSearch(formula=Class~., data=dat,
+                          criterion="AUC", training_percent=0.8,
+                          suppress_warnings=TRUE, plot_roc=TRUE, 
+                          plot_comparison=TRUE, multi_panel=TRUE)
+# No need to print anything as this example focuses on visualization
 
 \end{ExampleCode}
 \end{Examples}
@@ -253,6 +598,194 @@ print(paste("Number of unique values for ManyCats:", length(unique(iris_many_lev
 # Plot pairwise with Sepal.Length as response
 # Should print a message for 'ManyCats' and skip its plot
 plot_descrip(iris_many_levels[, c("Sepal.Length", "Petal.Length", "ManyCats")], type = "pair")
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{plot\_model\_cm}{Plot Confusion Matrix from OptimalModelSearch Results}{plot.Rul.model.Rul.cm}
+%
+\begin{Description}
+This function takes the results from OptimalModelSearch with Accuracy criterion
+and plots the confusion matrix. It provides a visual representation of the model's
+classification performance.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plot_model_cm(
+  results,
+  save_plot = FALSE,
+  pdf_filename = "confusion_matrix.pdf"
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{results}] A list returned by OptimalModelSearch with criterion="Accuracy"
+
+\item[\code{save\_plot}] Logical indicating whether to save the plot to a PDF file. Default is FALSE.
+
+\item[\code{pdf\_filename}] A character string specifying the name of the PDF file if
+save\_plot is TRUE. Default is "confusion\_matrix.pdf".
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The confusion matrix object from the best model is returned invisibly
+\end{Value}
+%
+\begin{Section}{When to Use}
+
+Use this function when you want to visualize the confusion matrix from an OptimalModelSearch
+result that used the "Accuracy" criterion. The confusion matrix shows true positives, 
+false positives, true negatives, and false negatives, along with performance metrics like 
+sensitivity, specificity, and PPV.
+\end{Section}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# Run OptimalModelSearch with Accuracy criterion
+library(mlbench)
+data(PimaIndiansDiabetes)
+df <- PimaIndiansDiabetes
+df$diabetes <- ifelse(df$diabetes=="neg", 0, 1)
+result <- OptimalModelSearch(formula=diabetes~., data=df, criterion="Accuracy")
+
+# Plot the confusion matrix
+plot_model_cm(result)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{plot\_model\_rocs}{Plot ROC Curves from OptimalModelSearch Results}{plot.Rul.model.Rul.rocs}
+%
+\begin{Description}
+This function takes the results from OptimalModelSearch with AUC criterion
+and plots the ROC curves. It can plot either the best model's ROC curve or
+a comparison of multiple models.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+plot_model_rocs(
+  results,
+  comparison = FALSE,
+  multi_panel = FALSE,
+  save_plot = FALSE,
+  pdf_filename = "roc_curves.pdf",
+  plot_title = NULL
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{results}] A list returned by OptimalModelSearch with criterion="AUC"
+
+\item[\code{comparison}] Logical indicating whether to plot all models for comparison. Default is FALSE.
+
+\item[\code{multi\_panel}] Logical indicating whether to display each model in its own panel when comparison=TRUE. Default is FALSE.
+
+\item[\code{save\_plot}] Logical indicating whether to save the plot to a PDF file. Default is FALSE.
+
+\item[\code{pdf\_filename}] A character string specifying the name of the PDF file if
+save\_plot is TRUE. Default is "roc\_curves.pdf".
+
+\item[\code{plot\_title}] A character string for the plot title. Default is auto-generated.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+The ROC plot is displayed and the ROC object(s) used are returned invisibly.
+\end{Value}
+%
+\begin{Section}{Models Compared}
+
+This function can display ROC curves for any or all of the following models compared by OptimalModelSearch:
+\begin{itemize}
+
+\item{} Full Logistic Regression: Uses all predictors in the formula
+\item{} Backward Stepwise: Performs backward selection from the full model
+\item{} Forward Stepwise: Starts with intercept-only model and adds predictors
+\item{} GAM (Generalized Additive Model): Fits smooth terms for numeric predictors
+\item{} Lasso Regression: L1 regularization that can shrink coefficients to zero
+\item{} Ridge Regression: L2 regularization that shrinks coefficients
+
+\end{itemize}
+
+\end{Section}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# Run OptimalModelSearch with AUC criterion
+library(mlbench)
+data(Sonar)
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
+result <- OptimalModelSearch(formula=Class~., data=dat, criterion="AUC")
+
+# Plot the best model's ROC curve
+plot_model_rocs(result)
+
+# Plot comparison of all models' ROC curves on one panel
+plot_model_rocs(result, comparison=TRUE)
+
+# Plot each model's ROC curve in its own panel
+plot_model_rocs(result, comparison=TRUE, multi_panel=TRUE)
+
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{predict\_model}{Make predictions from a model extracted by extract\_best\_model}{predict.Rul.model}
+%
+\begin{Description}
+This function provides a unified interface for making predictions with any
+model type returned by the extract\_best\_model function, handling the 
+appropriate data formatting for each model type.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+predict_model(model, newdata, formula = NULL, type = "response", ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{model}] A model object returned by extract\_best\_model
+
+\item[\code{newdata}] A data frame containing the new data for prediction
+
+\item[\code{formula}] The formula used to fit the model (required for glmnet models)
+
+\item[\code{type}] The type of prediction to return, usually "response" for probabilities
+
+\item[\code{...}] Additional arguments passed to the underlying predict method
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+This function automatically detects the model type and applies the appropriate
+prediction method. For glmnet models (lasso and ridge), it handles the conversion
+of the data frame to a model matrix as required by the predict.cv.glmnet method.
+\end{Details}
+%
+\begin{Value}
+A vector of predictions
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+## Not run: 
+# Extract the best model from OptimalModelSearch results
+best_model <- extract_best_model(result, data)
+
+# Make predictions on new data
+predictions <- predict_model(best_model, newdata = new_data, 
+                            formula = y ~ x1 + x2)
 
 ## End(Not run)
 \end{ExampleCode}

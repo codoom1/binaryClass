@@ -1,4 +1,17 @@
+binaryClass-package	binaryClass
 .draw_confusion_matrix	dot-draw_confusion_matrix
 .plot_barplot_ind	dot-plot_barplot_ind
+binaryClass	binaryClass
+compare_model_rocs	compare_model_rocs
+compare_rocs	compare_model_rocs
+extract_best_model	extract_best_model
+get_best_model	extract_best_model
+model_extraction	extract_best_model
 OptimalModelSearch	OptimalModelSearch
 plot_descrip	plot_descrip
+plot_model_cm	plot_model_cm
+plot_model_rocs	plot_model_rocs
+plot_roc_curves	compare_model_rocs
+predict_model	predict_model
+roc_comparison	compare_model_rocs
+roc_curves	compare_model_rocs

@@ -12,9 +12,9 @@ compare_model_rocs(
   formula,
   data,
   training_percent = 0.8,
-  plot_title = "Comparison of ROC Curves",
   save_plot = FALSE,
-  pdf_filename = "roc_curves_comparison.pdf"
+  pdf_filename = "roc_curves_comparison.pdf",
+  suppress_warnings = FALSE
 )
 }
 \arguments{
@@ -26,90 +26,70 @@ model to be fitted (e.g., `response ~ predictor1 + predictor2` or `response ~ .`
 \item{training_percent}{A numeric value between 0 and 1 indicating the proportion
 of the data to use for training. Default is `0.8`.}
 
-\item{plot_title}{A character string for the plot title. Default is "Comparison of ROC Curves".}
-
 \item{save_plot}{Logical value indicating whether to save the plot to a PDF file.
 Default is FALSE.}
 
 \item{pdf_filename}{A character string specifying the name of the PDF file if
 save_plot is TRUE. Default is "roc_curves_comparison.pdf".}
+
+\item{suppress_warnings}{Logical indicating whether to suppress warnings. Default is FALSE.}
 }
 \value{
 A list containing the ROC objects for each model and their AUC values:
   \itemize{
-    \item{`stepwise_roc`}: The ROC object for the stepwise logistic regression model.
-    \item{`lasso_roc`}: The ROC object for the lasso regression model.
-    \item{`ridge_roc`}: The ROC object for the ridge regression model.
+    \item{`roc_list`}: A list of ROC objects for each model.
     \item{`auc_values`}: A named numeric vector of AUC values for each model.
     \item{`best_model`}: The name of the model with the highest AUC.
   }
 }
 \description{
-This function fits multiple binary classification models (stepwise logistic regression,
-lasso, and ridge) to the same dataset and plots their ROC curves for comparison.
-It helps visualize the performance differences between models.
+This function fits multiple binary classification models (full logistic regression, backward stepwise,
+forward stepwise, GAM, lasso, and ridge) to the same dataset and plots their ROC curves 
+in a multi-panel layout for easy comparison. Each model gets its own panel with a dedicated ROC curve.
 }
 \section{Models Compared}{
 
-This function compares the following three models:
+This function compares the following models:
 \itemize{
-  \item Stepwise Logistic Regression: Full model with all predictors from formula
+  \item Full Logistic Regression: Uses all predictors in the formula
+  \item Backward Stepwise: Performs backward selection from the full model
+  \item Forward Stepwise: Starts with intercept-only model and adds predictors
+  \item GAM (Generalized Additive Model): Fits smooth terms for numeric predictors
   \item Lasso Regression: L1 regularization that can shrink coefficients to zero
   \item Ridge Regression: L2 regularization that shrinks coefficients
 }
-Note that this is a simplified subset of models compared to OptimalModelSearch, which
-additionally includes backward stepwise, forward stepwise, and GAM models.
 }
 
 \section{Relationship with OptimalModelSearch}{
 
-While this function is a standalone tool, users can also generate ROC curves using:
+This function provides all the same models as OptimalModelSearch but is focused on visualization 
+rather than model selection. The multiple panel layout makes it easy to compare ROC curves visually.
 \itemize{
-  \item \code{OptimalModelSearch(formula, data, criterion="AUC", plot_roc=TRUE)} to plot only the best model's ROC curve
-  \item \code{OptimalModelSearch(formula, data, criterion="AUC", plot_roc=TRUE, plot_comparison=TRUE)} to plot all models' ROC curves
-  \item \code{plot_model_rocs(result)} where result is the output from OptimalModelSearch with AUC criterion
+  \item Use \code{compare_model_rocs()} to get a dedicated multi-panel ROC plot
+  \item Use \code{OptimalModelSearch(criterion="AUC", plot_roc=TRUE, plot_comparison=TRUE, multi_panel=TRUE)} for integrated model selection and visualization
 }
-The approaches differ in that \code{compare_model_rocs} only compares stepwise, lasso and ridge, 
-while \code{OptimalModelSearch} compares full GLM, backward stepwise, forward stepwise, GAM, lasso, and ridge.
 }
 
 \examples{
 \dontrun{
-# Create a sample dataset
-set.seed(123)
-test_df <- data.frame(
-  x1 = rnorm(100),
-  x2 = rnorm(100),
-  y = sample(c(0, 1), 100, replace = TRUE)
-)
+# Load example data
+library(mlbench)
+data(Sonar)
+dat <- Sonar
+dat$Class <- ifelse(dat$Class=="R", 0, 1)
 
-# Method 1: Compare ROC curves using compare_model_rocs
-result <- compare_model_rocs(y ~ ., data = test_df)
-
-# Access the ROC objects
-result$stepwise_roc
-result$lasso_roc
-result$ridge_roc
+# Generate multi-panel ROC plot comparing all models
+result <- compare_model_rocs(Class ~ ., data = dat)
 
 # See the AUC values
 result$auc_values
 
 # Check which model performed best
 result$best_model
-
-# Method 2: Compare ROC curves using OptimalModelSearch (more models)
-# Automatic ROC curve of the best model
-oms_result <- OptimalModelSearch(formula=y ~ ., data=test_df,
-                              criterion="AUC", plot_roc=TRUE)
-
-# Automatic comparison of all models (full GLM, stepwise, GAM, lasso, ridge)
-oms_result <- OptimalModelSearch(formula=y ~ ., data=test_df,
-                              criterion="AUC", plot_roc=TRUE, 
-                              plot_comparison=TRUE)
 }
 }
 \seealso{
-\code{\link{OptimalModelSearch}} for more comprehensive model selection,
+\code{\link{OptimalModelSearch}} for comprehensive model selection,
   \code{\link{plot_model_rocs}} for plotting ROC curves from OptimalModelSearch results
 }
 \concept{AUC comparison}

@@ -1,0 +1,11 @@
+Starting OptimalModelSearch debug trace
+
+Warning: Confusion matrix was not properly stored in results$details.
+Manually adding confusion matrix for the best model.
+
+Debugging OptimalModelSearch results
+Names in result: criterion, threshold, best_model_name, performance_metric 
+Best model name: forward.stepwise.Accuracy.Accuracy 
+Original best model name (without the .Accuracy suffix): forward.stepwise 
+full.glm does NOT exist as a local variable
+forward.stepwise exists as a local variable

@@ -4,10 +4,12 @@
 \alias{.draw_confusion_matrix}
 \title{Internal helper function to draw a confusion matrix visualization}
 \usage{
-.draw_confusion_matrix(cm)
+.draw_confusion_matrix(cm, model_name = NULL)
 }
 \arguments{
 \item{cm}{A confusion matrix object (typically from `caret::confusionMatrix`).}
+
+\item{model_name}{Optional model name to include in the title.}
 }
 \description{
 Internal helper function to draw a confusion matrix visualization

@@ -1,0 +1,39 @@
+
+=== Testing binaryClass functions ===
+
+Creating a synthetic dataset...
+Dataset created with 100 observations and 4 variables
+
+Test 1: OptimalModelSearch with Accuracy criterion
+Warning: Confusion matrix was not properly stored in results$details.
+Manually adding confusion matrix for the best model.
+Plotting confusion matrix...
+Confusion matrix not found in results$details, recreating it...
+SUCCESS: Best model: forward.stepwise.Accuracy.Accuracy with accuracy: 0.7 
+
+Test 2: extract_best_model
+SUCCESS: Extracted model of class: glm 
+
+Test 3: OptimalModelSearch with AUC criterion
+SUCCESS: Best model: gam with AUC: 0.7142857 
+
+Test 4: plot_model_rocs
+SUCCESS: plot_model_rocs executed without errors
+
+Test 5: OptimalModelSearch with AIC criterion
+SUCCESS: Best model: gam with AIC: 84.64378 
+
+Test 6: compare_model_rocs
+SUCCESS: compare_model_rocs executed without errors
+
+Test 7: plot_model_cm
+Debugging plot_model_cm:
+results$criterion: Accuracy 
+results$best_model_name: forward.stepwise.Accuracy.Accuracy 
+Names in results: criterion, threshold, best_model_name, performance_metric 
+Is details present: FALSE 
+No valid confusion matrix found in results, attempting to create one...
+Created default confusion matrix visualization based on accuracy
+SUCCESS: plot_model_cm executed without errors
+
+=== All tests completed ===

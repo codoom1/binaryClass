@@ -11,63 +11,39 @@
 * checking extension type ... Package
 * this is package ‘binaryClass’ version ‘1.0.0’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [3s/13s] WARNING
-Maintainer: ‘Christopher Odoom & Denis Folitse <codoom@umass.edu><dfolitse@umass.edu>’
-
-The maintainer field is invalid or specifies more than one person
+* checking CRAN incoming feasibility ... [3s/10s] NOTE
+Maintainer: ‘Christopher Odoom <codoom@umass.edu>’
 
 New submission
 
-This build time stamp is over a month old.
+Found the following (possibly) invalid URLs:
+  URL: https://codoom1.github.io/binaryClass/
+    From: DESCRIPTION
+          man/binaryClass.Rd
+    Status: 404
+    Message: Not Found
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK
 * checking if there is a namespace ... OK
 * checking for executable files ... OK
-* checking for hidden files and directories ... NOTE
-Found the following hidden files and directories:
-  .DS_Store
-  ..Rcheck
-These were most likely included in error. See section ‘Package
-structure’ in the ‘Writing R Extensions’ manual.
-
-CRAN-pack does not know about
-  .DS_Store
-  ..Rcheck
+* checking for hidden files and directories ... OK
 * checking for portable file names ... OK
 * checking for sufficient/correct file permissions ... OK
-* checking serialization versions ... WARNING
-Found file(s) with version 3 serialization:
-  ‘..Rcheck/binaryClass/Meta/Rd.rds’
-  ‘..Rcheck/binaryClass/Meta/features.rds’
-  ‘..Rcheck/binaryClass/Meta/hsearch.rds’
-  ‘..Rcheck/binaryClass/Meta/links.rds’
-  ‘..Rcheck/binaryClass/Meta/nsInfo.rds’
-  ‘..Rcheck/binaryClass/Meta/package.rds’
-  ‘..Rcheck/binaryClass/R/binaryClass.rdx’
-  ‘..Rcheck/binaryClass/help/aliases.rds’
-  ‘..Rcheck/binaryClass/help/binaryClass.rdx’
-  ‘..Rcheck/binaryClass/help/paths.rds’
-Such files are only readable in R >= 3.5.0.
-Recreate them with R < 3.5.0 or save(version = 2) or saveRDS(version =
-2) as appropriate
+* checking serialization versions ... OK
 * checking whether package ‘binaryClass’ can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
-* checking for future file timestamps ... OK
-* checking DESCRIPTION meta-information ... NOTE
-License components which are templates and need '+ file LICENSE':
-  MIT
+* checking for future file timestamps ... NOTE
+unable to verify current time
+* checking DESCRIPTION meta-information ... OK
 * checking top-level files ... NOTE
 Non-standard files/directories found at top level:
-  ‘Rplots.pdf’ ‘binaryClass.Rcheck’
+  ‘debug_cm.R’ ‘debug_cm_plot.pdf’ ‘debug_trace.txt’ ‘test_cm.pdf’
+  ‘test_functions.R’ ‘test_results.txt’
 * checking for left-over files ... OK
 * checking index information ... OK
-* checking package subdirectories ... WARNING
-Found the following directories with names of check directories:
-  ./..Rcheck
-  ./binaryClass.Rcheck
-Most likely, these were included erroneously.
+* checking package subdirectories ... OK
 * checking code files for non-ASCII characters ... OK
 * checking R files for syntax errors ... OK
 * checking whether the package can be loaded ... OK
@@ -82,31 +58,20 @@ Most likely, these were included erroneously.
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... OK
-* checking Rd files ... NOTE
-prepare_Rd: OptimalModelSearch.Rd:63-65: Dropping empty section \note
-prepare_Rd: OptimalModelSearch.Rd:56-58: Dropping empty section \references
-prepare_Rd: OptimalModelSearch.Rd:69-72: Dropping empty section \seealso
+* checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
 * checking Rd cross-references ... OK
 * checking for missing documentation entries ... OK
-* checking for code/documentation mismatches ... WARNING
-Codoc mismatches from Rd file 'OptimalModelSearch.Rd':
-OptimalModelSearch
-  Code: function(formula, data, criterion, training_percent = 0.8,
-                 threshold = 0.5)
-  Docs: function(formula, data, criterion = c("AUC", "Accuracy",
-                 "AIC"), training_percent = 0.8, threshold = 0.5)
-  Mismatches in argument default values:
-    Name: 'criterion' Code:  Docs: c("AUC", "Accuracy", "AIC")
-
+* checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... OK
 * checking Rd contents ... OK
 * checking for unstated dependencies in examples ... OK
-* checking examples ... [14s/14s] NOTE
-Examples with CPU (user + system) or elapsed time > 5s
-                     user system elapsed
-OptimalModelSearch 11.182   0.44  11.671
+* checking examples ... OK
+* checking examples with --run-donttest ... [80s/51s] OK
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... OK
+  Running ‘testthat.R’
 * checking PDF version of manual ... WARNING
 LaTeX errors when creating PDF version.
 This typically indicates Rd problems.
@@ -116,16 +81,31 @@ Re-running with no redirection of stdout/stderr.
 Found the following HTML validation problems:
 OptimalModelSearch.html:15:44 (OptimalModelSearch.Rd:4): Error: <main> is not recognized!
 OptimalModelSearch.html:15:44 (OptimalModelSearch.Rd:4): Warning: discarding unexpected <main>
-OptimalModelSearch.html:142:1 (OptimalModelSearch.Rd:105): Warning: discarding unexpected </main>
+OptimalModelSearch.html:241:1 (OptimalModelSearch.Rd:156): Warning: discarding unexpected </main>
 OptimalModelSearch.html:4:1 (OptimalModelSearch.Rd:4): Warning: <link> inserting "type" attribute
 OptimalModelSearch.html:12:1 (OptimalModelSearch.Rd:4): Warning: <script> proprietary attribute "onload"
 OptimalModelSearch.html:12:1 (OptimalModelSearch.Rd:4): Warning: <script> inserting "type" attribute
 OptimalModelSearch.html:17:1 (OptimalModelSearch.Rd:4): Warning: <table> lacks "summary" attribute
-OptimalModelSearch.html:38:1 (OptimalModelSearch.Rd:18): Warning: <table> lacks "summary" attribute
-OptimalModelSearch.html:80:1 (OptimalModelSearch.Rd:50): Warning: <table> lacks "summary" attribute
+OptimalModelSearch.html:41:1 (OptimalModelSearch.Rd:21): Warning: <table> lacks "summary" attribute
+OptimalModelSearch.html:143:1 (OptimalModelSearch.Rd:81): Warning: <table> lacks "summary" attribute
+binaryClass.html:15:44 (binaryClass.Rd:7): Error: <main> is not recognized!
+binaryClass.html:15:44 (binaryClass.Rd:7): Warning: discarding unexpected <main>
+binaryClass.html:76:1 (binaryClass.Rd:37): Warning: discarding unexpected </main>
+binaryClass.html:4:1 (binaryClass.Rd:7): Warning: <link> inserting "type" attribute
+binaryClass.html:12:1 (binaryClass.Rd:7): Warning: <script> proprietary attribute "onload"
+binaryClass.html:12:1 (binaryClass.Rd:7): Warning: <script> inserting "type" attribute
+binaryClass.html:17:1 (binaryClass.Rd:7): Warning: <table> lacks "summary" attribute
+compare_model_rocs.html:15:44 (compare_model_rocs.Rd:9): Error: <main> is not recognized!
+compare_model_rocs.html:15:44 (compare_model_rocs.Rd:9): Warning: discarding unexpected <main>
+compare_model_rocs.html:165:1 (compare_model_rocs.Rd:89): Warning: discarding unexpected </main>
+compare_model_rocs.html:4:1 (compare_model_rocs.Rd:9): Warning: <link> inserting "type" attribute
+compare_model_rocs.html:12:1 (compare_model_rocs.Rd:9): Warning: <script> proprietary attribute "onload"
+compare_model_rocs.html:12:1 (compare_model_rocs.Rd:9): Warning: <script> inserting "type" attribute
+compare_model_rocs.html:17:1 (compare_model_rocs.Rd:9): Warning: <table> lacks "summary" attribute
+compare_model_rocs.html:44:1 (compare_model_rocs.Rd:21): Warning: <table> lacks "summary" attribute
 dot-draw_confusion_matrix.html:15:44 (dot-draw_confusion_matrix.Rd:5): Error: <main> is not recognized!
 dot-draw_confusion_matrix.html:15:44 (dot-draw_confusion_matrix.Rd:5): Warning: discarding unexpected <main>
-dot-draw_confusion_matrix.html:42:1 (dot-draw_confusion_matrix.Rd:10): Warning: discarding unexpected </main>
+dot-draw_confusion_matrix.html:46:1 (dot-draw_confusion_matrix.Rd:12): Warning: discarding unexpected </main>
 dot-draw_confusion_matrix.html:4:1 (dot-draw_confusion_matrix.Rd:5): Warning: <link> inserting "type" attribute
 dot-draw_confusion_matrix.html:12:1 (dot-draw_confusion_matrix.Rd:5): Warning: <script> proprietary attribute "onload"
 dot-draw_confusion_matrix.html:12:1 (dot-draw_confusion_matrix.Rd:5): Warning: <script> inserting "type" attribute
@@ -139,6 +119,14 @@ dot-plot_barplot_ind.html:12:1 (dot-plot_barplot_ind.Rd:5): Warning: <script> pr
 dot-plot_barplot_ind.html:12:1 (dot-plot_barplot_ind.Rd:5): Warning: <script> inserting "type" attribute
 dot-plot_barplot_ind.html:17:1 (dot-plot_barplot_ind.Rd:5): Warning: <table> lacks "summary" attribute
 dot-plot_barplot_ind.html:35:1 (dot-plot_barplot_ind.Rd:10): Warning: <table> lacks "summary" attribute
+extract_best_model.html:15:44 (extract_best_model.Rd:7): Error: <main> is not recognized!
+extract_best_model.html:15:44 (extract_best_model.Rd:7): Warning: discarding unexpected <main>
+extract_best_model.html:130:1 (extract_best_model.Rd:73): Warning: discarding unexpected </main>
+extract_best_model.html:4:1 (extract_best_model.Rd:7): Warning: <link> inserting "type" attribute
+extract_best_model.html:12:1 (extract_best_model.Rd:7): Warning: <script> proprietary attribute "onload"
+extract_best_model.html:12:1 (extract_best_model.Rd:7): Warning: <script> inserting "type" attribute
+extract_best_model.html:17:1 (extract_best_model.Rd:7): Warning: <table> lacks "summary" attribute
+extract_best_model.html:41:1 (extract_best_model.Rd:14): Warning: <table> lacks "summary" attribute
 plot_descrip.html:15:44 (plot_descrip.Rd:5): Error: <main> is not recognized!
 plot_descrip.html:15:44 (plot_descrip.Rd:5): Warning: discarding unexpected <main>
 plot_descrip.html:118:1 (plot_descrip.Rd:78): Warning: discarding unexpected </main>
@@ -147,9 +135,34 @@ plot_descrip.html:12:1 (plot_descrip.Rd:5): Warning: <script> proprietary attrib
 plot_descrip.html:12:1 (plot_descrip.Rd:5): Warning: <script> inserting "type" attribute
 plot_descrip.html:17:1 (plot_descrip.Rd:5): Warning: <table> lacks "summary" attribute
 plot_descrip.html:37:1 (plot_descrip.Rd:10): Warning: <table> lacks "summary" attribute
+plot_model_cm.html:15:44 (plot_model_cm.Rd:5): Error: <main> is not recognized!
+plot_model_cm.html:15:44 (plot_model_cm.Rd:5): Warning: discarding unexpected <main>
+plot_model_cm.html:89:1 (plot_model_cm.Rd:48): Warning: discarding unexpected </main>
+plot_model_cm.html:4:1 (plot_model_cm.Rd:5): Warning: <link> inserting "type" attribute
+plot_model_cm.html:12:1 (plot_model_cm.Rd:5): Warning: <script> proprietary attribute "onload"
+plot_model_cm.html:12:1 (plot_model_cm.Rd:5): Warning: <script> inserting "type" attribute
+plot_model_cm.html:17:1 (plot_model_cm.Rd:5): Warning: <table> lacks "summary" attribute
+plot_model_cm.html:41:1 (plot_model_cm.Rd:14): Warning: <table> lacks "summary" attribute
+plot_model_rocs.html:15:44 (plot_model_rocs.Rd:5): Error: <main> is not recognized!
+plot_model_rocs.html:15:44 (plot_model_rocs.Rd:5): Warning: discarding unexpected <main>
+plot_model_rocs.html:128:1 (plot_model_rocs.Rd:68): Warning: discarding unexpected </main>
+plot_model_rocs.html:4:1 (plot_model_rocs.Rd:5): Warning: <link> inserting "type" attribute
+plot_model_rocs.html:12:1 (plot_model_rocs.Rd:5): Warning: <script> proprietary attribute "onload"
+plot_model_rocs.html:12:1 (plot_model_rocs.Rd:5): Warning: <script> inserting "type" attribute
+plot_model_rocs.html:17:1 (plot_model_rocs.Rd:5): Warning: <table> lacks "summary" attribute
+plot_model_rocs.html:44:1 (plot_model_rocs.Rd:17): Warning: <table> lacks "summary" attribute
+predict_model.html:15:44 (predict_model.Rd:5): Error: <main> is not recognized!
+predict_model.html:15:44 (predict_model.Rd:5): Warning: discarding unexpected <main>
+predict_model.html:88:1 (predict_model.Rd:41): Warning: discarding unexpected </main>
+predict_model.html:4:1 (predict_model.Rd:5): Warning: <link> inserting "type" attribute
+predict_model.html:12:1 (predict_model.Rd:5): Warning: <script> proprietary attribute "onload"
+predict_model.html:12:1 (predict_model.Rd:5): Warning: <script> inserting "type" attribute
+predict_model.html:17:1 (predict_model.Rd:5): Warning: <table> lacks "summary" attribute
+predict_model.html:37:1 (predict_model.Rd:10): Warning: <table> lacks "summary" attribute
+predict_model.html:54:14 (predict_model.Rd:18): Warning: <code> attribute "id" has invalid value "..."
 * checking for non-standard things in the check directory ... NOTE
 Found the following files/directories:
-  ‘binaryClass-manual.tex’
+  ‘.DS_Store’ ‘binaryClass-manual.tex’
 * checking for detritus in the temp directory ... OK
 * DONE
-Status: 1 ERROR, 5 WARNINGs, 7 NOTEs
+Status: 1 ERROR, 1 WARNING, 5 NOTEs
